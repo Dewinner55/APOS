@@ -1,0 +1,96 @@
+--------------------------
+x - обозночение сектора/зоны ощибки
+
+0 - id
+1 - market
+2 - user/admin
+3 - category
+4 - subcategory
+5 - order
+6 - promocode
+7- brand
+8 - product
+9 - group
+10 - language
+11 - notifications
+12 - features
+13 - comment
+14 - template info
+15 - product_info
+
+111 - file
+
+---------------------------
+
+---------------------------
+y - обозночение причины ошибки
+
+1 - expired/old
+2 - not enough
+3 - data
+4 - not match
+5 - invalid
+---------------------------
+
+---------------------------
+z - обозначение поля ошибки
+
+1 - password
+2 - access token
+---------------------------
+
+---------------------------
+особые знаки
+
+99 - пробел
+
+---------------------------
+common errors
+
+1000 - success
+2000 - Неверный токен обновления
+3001 - Срок действия refresh токена истек
+3002 - Срок действия access токена истек
+150 - Server error
+
+----------------------------
+110x99y00z - Not found errors
+
+110 - Not found
+1101 - Market Not found
+
+----------------------------
+120x99y99z - Invalid data errors
+
+120 - Invalid data
+1200 - Invalid id
+12088 -Invalid extencion
+1206991 - invalid promocode expired 
+1202993 - Incorrect Credentials (Неверные учетные данные юзера)
+1202994991 - Passwords DontMatch (пороли не совподают)
+
+----------------------------
+130x99y99z - Forbiden errors
+
+130 - Forbiden
+13012 - this feature is not available
+1302 - Недостаточно прав
+
+----------------------------
+140x99y99z - Already exist errors
+
+140 - Already exist
+1401 - Market already exist
+
+
+----------------------------
+61x99y99z - Conflict errors
+61 - Conflict
+61x99x - there is object link to this object (618994 there is products link to this subcategory)
+
+----------------------------
+62x99y99z - failed errors
+
+62 - failed
+622992 - Не удалось проверить учетные данные
+----------------------------
