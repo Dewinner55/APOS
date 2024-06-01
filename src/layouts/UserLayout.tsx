@@ -21,19 +21,20 @@ import VerticalAppBarContent from './components/vertical/AppBarContent'
 import { useSettings } from 'src/@core/hooks/useSettings'
 
 // interface Import
-import {User} from "src/@core/interface/user/interface";
+import { User } from 'src/@core/interface/user/interface'
+import { useRouter } from 'next/router'
 
 interface Props {
-  userProfile: User;
-  children: ReactNode;
+  userProfile: User
+  children: ReactNode
 }
 
 const UserLayout = (props: Props) => {
   // ** Props
-  const { children, userProfile, } = props;
+  const { children, userProfile } = props
 
   // ** Hooks
-  const { settings, saveSettings} = useSettings()
+  const { settings, saveSettings } = useSettings()
 
   const hidden = useMediaQuery((theme: Theme) => theme.breakpoints.down('lg'))
 
@@ -48,8 +49,8 @@ const UserLayout = (props: Props) => {
           <img width={230} alt='package offers' src={`/images/misc/upgrade-banner-${settings.mode}.png`} />
         </a>
       </Box>
-    );
-  });
+    )
+  })
 
   return (
     <VerticalLayout
