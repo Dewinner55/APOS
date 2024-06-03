@@ -26,6 +26,7 @@ import 'react-perfect-scrollbar/dist/css/styles.css'
 
 // ** Global css styles
 import '../../styles/globals.css'
+import '../../styles/stylesAnime.css'
 import 'src/assets/iconify-icons/generated-icons.css'
 
 // ** interface Import
@@ -34,10 +35,16 @@ import ThemeComponent from "../@core/theme/ThemeComponent";
 import UserLayout from 'src/layouts/UserLayout'
 import React from "react";
 
+interface PageProps {
+  userProfile: User;
+  messages: any;
+}
+
 // ** Extend App Props with Emotion
 type ExtendedAppProps = AppProps & {
   Component: NextPage
   emotionCache: EmotionCache
+  pageProps: PageProps;
 }
 
 const clientSideEmotionCache = createEmotionCache()

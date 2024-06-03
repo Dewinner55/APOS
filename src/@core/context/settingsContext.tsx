@@ -34,10 +34,7 @@ export const SettingsContext = createContext<SettingsContextValue>({
   saveSettings: () => null,
 });
 
-export const SettingsProvider = (props: Props) => {
-  // ** Props
-  const { children, userContext } = props
-
+export const SettingsProvider = ({ userContext, children }: Props) => {
   const config = themeConfig(userContext);
 
   const initialSettings: Settings = {
@@ -45,20 +42,17 @@ export const SettingsProvider = (props: Props) => {
     mode: config.mode,
     contentWidth: config.contentWidth,
     skin: 'none'
-  }
+  };
 
-  // ** State
   const [settings, setSettings] = useState<Settings>({ ...initialSettings });
 
   const saveSettings = (updatedSettings: Settings) => {
     setSettings(updatedSettings);
-  }
+  };
 
   return (
     <SettingsContext.Provider value={{ settings, saveSettings }}>
       {children}
     </SettingsContext.Provider>
   );
-}
-
-export const SettingsConsumer = SettingsContext.Consumer;
+};
