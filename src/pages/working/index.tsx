@@ -150,7 +150,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   };
 };
 
-const Blog = ({ initialTheme }: { initialTheme: PaletteMode }) => {
+const Conditions = ({ initialTheme }: { initialTheme: PaletteMode }) => {
   const { mode, toggleColorMode,  } = useThemeMode(initialTheme);
   const [showCustomTheme, ] = React.useState(true);
   const LPtheme = createTheme(getLPTheme(mode));
@@ -184,8 +184,8 @@ const Blog = ({ initialTheme }: { initialTheme: PaletteMode }) => {
   );
 }
 
-Blog.getLayout = (page: ReactNode) => <BlankLayout>{page}</BlankLayout>;
+Conditions.getLayout = (page: ReactNode) => <BlankLayout>{page}</BlankLayout>;
 
-Blog.guestGuard = true;
+Conditions.guestGuard = true;
 
-export default Blog;
+export default Conditions;

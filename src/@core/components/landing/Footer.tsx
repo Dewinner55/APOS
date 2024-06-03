@@ -11,6 +11,8 @@ import Typography from '@mui/material/Typography';
 import FacebookIcon from '@mui/icons-material/GitHub';
 import LinkedInIcon from '@mui/icons-material/LinkedIn';
 import TwitterIcon from '@mui/icons-material/X';
+import MenuItem from "@mui/material/MenuItem";
+import { useRouter } from 'next/router';
 
 const logoStyle = {
   width: '140px',
@@ -27,7 +29,27 @@ function Copyright() {
   );
 }
 
-export default function Footer() {
+interface FooterProps {
+  includeHomePageLink?: boolean;
+}
+
+export default function ({ includeHomePageLink = false }: FooterProps) {
+  const router = useRouter();
+
+
+  const scrollToSection = (sectionId: string) => {
+    const sectionElement = document.getElementById(sectionId);
+    const offset = 128;
+    if (sectionElement) {
+      const targetScroll = sectionElement.offsetTop - offset;
+      sectionElement.scrollIntoView({ behavior: 'smooth' });
+      window.scrollTo({
+        top: targetScroll,
+        behavior: 'smooth',
+      });
+    }
+  };
+
   return (
     <Container
       sx={{
@@ -96,24 +118,119 @@ export default function Footer() {
             gap: 1,
           }}
         >
-          <Typography variant="body2" fontWeight={600}>
+          <Typography variant="body2" fontWeight={600} sx={{ marginLeft: '14px' }}>
             Продукт
           </Typography>
-          <Link color="text.secondary" href="#">
-            Функции
-          </Link>
-          <Link color="text.secondary" href="#">
-            Отзывы
-          </Link>
-          <Link color="text.secondary" href="#">
-            Основные моменты
-          </Link>
-          <Link color="text.secondary" href="#">
-            Ценообразование
-          </Link>
-          <Link color="text.secondary" href="#">
-            FAQs
-          </Link>
+          <MenuItem
+            onClick={() => {
+              if (includeHomePageLink) {
+                router.push('/#features');
+              } else {
+                scrollToSection('features');
+              }
+            }}
+            sx={{
+              py: '6px',
+              px: '12px',
+              "&:hover": {
+                '& > *': {
+                  color: 'text.primary'
+                }
+              }
+            }}
+          >
+            <Typography variant="body2" color="text.secondary">
+              Основные функции
+            </Typography>
+          </MenuItem>
+          <MenuItem
+            onClick={() => {
+              if (includeHomePageLink) {
+                router.push('/#testimonials');
+              } else {
+                scrollToSection('testimonials');
+              }
+            }}
+            sx={{
+              py: '6px',
+              px: '12px',
+              "&:hover": {
+                '& > *': {
+                  color: 'text.primary'
+                }
+              }
+            }}
+          >
+            <Typography variant="body2" color="text.secondary">
+              Отзывы наших клиентов
+            </Typography>
+          </MenuItem>
+          <MenuItem
+            onClick={() => {
+              if (includeHomePageLink) {
+                router.push('/#highlights');
+              } else {
+                scrollToSection('highlights');
+              }
+            }}
+            sx={{
+              py: '6px',
+              px: '12px',
+              "&:hover": {
+                '& > *': {
+                  color: 'text.primary'
+                }
+              }
+            }}
+          >
+            <Typography variant="body2" color="text.secondary">
+              Основные моменты
+            </Typography>
+          </MenuItem>
+          <MenuItem
+            onClick={() => {
+              if (includeHomePageLink) {
+                router.push('/#pricing');
+              } else {
+                scrollToSection('pricing');
+              }
+            }}
+            sx={{
+              py: '6px',
+              px: '12px',
+              "&:hover": {
+                '& > *': {
+                  color: 'text.primary'
+                }
+              }
+            }}
+          >
+            <Typography variant="body2" color="text.secondary">
+              Стоимость
+            </Typography>
+          </MenuItem>
+          <MenuItem
+            onClick={() => {
+              if (includeHomePageLink) {
+                router.push('/#faq');
+              } else {
+                scrollToSection('faq');
+              }
+            }}
+            sx={{
+              py: '6px',
+              px: '12px',
+              "&:hover": {
+                '& > *': {
+                  color: 'text.primary'
+                }
+              }
+            }}
+          >
+            <Typography variant="body2" color="text.secondary">
+              FAQ
+            </Typography>
+          </MenuItem>
         </Box>
         <Box
           sx={{
@@ -125,15 +242,24 @@ export default function Footer() {
           <Typography variant="body2" fontWeight={600}>
             Company
           </Typography>
-          <Link color="text.secondary" href="/blogAboutUs">
-            О нас
-          </Link>
-          <Link color="text.secondary" href="#">
-            Careers
-          </Link>
-          <Link color="text.secondary" href="#">
-            Press
-          </Link>
+          <MenuItem
+            onClick={() => {
+              router.push('/blogAboutUs');
+            }}
+            sx={{
+              py: '6px',
+              px: '12px',
+              "&:hover": {
+                '& > *': {
+                  color: 'text.primary'
+                }
+              }
+            }}
+          >
+            <Typography variant="body2" color="text.secondary">
+              О нас
+            </Typography>
+          </MenuItem>
         </Box>
         <Box
           sx={{
@@ -143,17 +269,62 @@ export default function Footer() {
           }}
         >
           <Typography variant="body2" fontWeight={600}>
-            Legal
+            Юридический права
           </Typography>
-          <Link color="text.secondary" href="#">
-            Terms
-          </Link>
-          <Link color="text.secondary" href="#">
-            Privacy
-          </Link>
-          <Link color="text.secondary" href="#">
-            Contact
-          </Link>
+          <MenuItem
+            onClick={() => {
+              router.push('/working');
+            }}
+            sx={{
+              py: '6px',
+              px: '12px',
+              "&:hover": {
+                '& > *': {
+                  color: 'text.primary'
+                }
+              }
+            }}
+          >
+            <Typography variant="body2" color="text.secondary">
+              Условия
+            </Typography>
+          </MenuItem>
+          <MenuItem
+            onClick={() => {
+              router.push('/сonfidentiality');
+            }}
+            sx={{
+              py: '6px',
+              px: '12px',
+              "&:hover": {
+                '& > *': {
+                  color: 'text.primary'
+                }
+              }
+            }}
+          >
+            <Typography variant="body2" color="text.secondary">
+              Конфиденциальность
+            </Typography>
+          </MenuItem>
+          <MenuItem
+            onClick={() => {
+              router.push('/contacts');
+            }}
+            sx={{
+              py: '6px',
+              px: '12px',
+              "&:hover": {
+                '& > *': {
+                  color: 'text.primary'
+                }
+              }
+            }}
+          >
+            <Typography variant="body2" color="text.secondary">
+              Контакты
+            </Typography>
+          </MenuItem>
         </Box>
       </Box>
       <Box

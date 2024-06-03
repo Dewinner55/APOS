@@ -83,7 +83,13 @@ export function withAuth(gssp: EnhancedGetServerSideProps): GetServerSideProps {
       // Логирование ошибки, чтобы мы могли её видеть в журнале сервера.
       console.error('Ошибка при обновлении токена или получении профиля пользователя:', error);
 
-      // Перенаправление на страницу входа при ошибке
+      const expiredCookies = cookies.split(';').map(cookie => {
+        const [name] = cookie.split('=');
+        return `${name}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
+      });
+
+      res.setHeader('Set-Cookie', expiredCookies)
+
       return {
         redirect: {
           destination: '/pages/login',

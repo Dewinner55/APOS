@@ -15,14 +15,19 @@ import FAQ from "src/@core/components/landing/FAQ";
 import Footer from "src/@core/components/landing/Footer";
 import {ReactNode, useEffect} from "react";
 import BlankLayout from "src/@core/layouts/BlankLayout";
-import {GetStaticProps} from "next";
 import {useThemeMode} from "src/@core/hooks/useThemeMode";
+import {PaletteMode} from "@mui/material";
+import {GetServerSideProps} from "next/types";
 
-export const getStaticProps: GetStaticProps = async () => {
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const themeFromCookie = context.req.cookies.theme;
+  const initialTheme = themeFromCookie || 'light';
+
+  console.log('theme', initialTheme);
 
   return {
     props: {
-
+      initialTheme,
     },
   };
 };
@@ -49,9 +54,9 @@ const smoothScrollTo = (targetY: number, duration: number) => {
   window.requestAnimationFrame(step);
 };
 
-const LandingPage = () => {
-  const { mode, toggleColorMode, theme } = useThemeMode('light');
-  const [showCustomTheme, setShowCustomTheme] = React.useState(true);
+const LandingPage = ({ initialTheme }: { initialTheme: PaletteMode }) => {
+  const { mode, toggleColorMode,  } = useThemeMode(initialTheme);
+  const [showCustomTheme, ] = React.useState(true);
   const LPtheme = createTheme(getLPTheme(mode));
   const defaultTheme = createTheme({ palette: { mode } });
 

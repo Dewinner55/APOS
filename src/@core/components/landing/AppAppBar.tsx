@@ -11,6 +11,10 @@ import MenuItem from '@mui/material/MenuItem';
 import Drawer from '@mui/material/Drawer';
 import MenuIcon from '@mui/icons-material/Menu';
 import ToggleColorMode from './ToggleColorMode';
+import { useRouter } from 'next/router';
+import ScrollToTop from "src/@core/components/scroll-to-top";
+import Fab from "@mui/material/Fab";
+import ArrowUp from "mdi-material-ui/ArrowUp";
 
 interface AppAppBarProps {
   mode: PaletteMode;
@@ -19,6 +23,8 @@ interface AppAppBarProps {
 }
 
 function AppAppBar({ mode, toggleColorMode, includeHomePageLink = false }: AppAppBarProps) {
+  const router = useRouter(); // Инициализация useRouter
+
   const [open, setOpen] = React.useState(false);
 
   const toggleDrawer = (newOpen: boolean) => () => {
@@ -93,68 +99,72 @@ function AppAppBar({ mode, toggleColorMode, includeHomePageLink = false }: AppAp
                 <MenuItem
                   onClick={() => {
                     if (includeHomePageLink) {
-                      window.location.href = '/#features';
+                      router.push('/#features');
                     } else {
                       scrollToSection('features');
                     }
                   }}
-                  sx={{py: '6px', px: '12px'}}
+                  sx={{ py: '6px', px: '12px' }}
                 >
                   <Typography variant="body2" color="text.primary">
                     Функции
                   </Typography>
                 </MenuItem>
+                {/* Пункт меню "Отзывы" */}
                 <MenuItem
                   onClick={() => {
                     if (includeHomePageLink) {
-                      window.location.href = '/#testimonials';
+                      router.push('/#testimonials');
                     } else {
                       scrollToSection('testimonials');
                     }
                   }}
-                  sx={{py: '6px', px: '12px'}}
+                  sx={{ py: '6px', px: '12px' }}
                 >
                   <Typography variant="body2" color="text.primary">
                     Отзывы
                   </Typography>
                 </MenuItem>
+                {/* Пункт меню "Моменты" */}
                 <MenuItem
                   onClick={() => {
                     if (includeHomePageLink) {
-                      window.location.href = '/#highlights';
+                      router.push('/#highlights');
                     } else {
                       scrollToSection('highlights');
                     }
                   }}
-                  sx={{py: '6px', px: '12px'}}
+                  sx={{ py: '6px', px: '12px' }}
                 >
                   <Typography variant="body2" color="text.primary">
                     Моменты
                   </Typography>
                 </MenuItem>
+                {/* Пункт меню "Цена" */}
                 <MenuItem
                   onClick={() => {
                     if (includeHomePageLink) {
-                      window.location.href = '/#pricing';
+                      router.push('/#pricing');
                     } else {
                       scrollToSection('pricing');
                     }
                   }}
-                  sx={{py: '6px', px: '12px'}}
+                  sx={{ py: '6px', px: '12px' }}
                 >
                   <Typography variant="body2" color="text.primary">
                     Цена
                   </Typography>
                 </MenuItem>
+                {/* Пункт меню "FAQ" */}
                 <MenuItem
                   onClick={() => {
                     if (includeHomePageLink) {
-                      window.location.href = '/#faq';
+                      router.push('/#faq');
                     } else {
                       scrollToSection('faq');
                     }
                   }}
-                  sx={{py: '6px', px: '12px'}}
+                  sx={{ py: '6px', px: '12px' }}
                 >
                   <Typography variant="body2" color="text.primary">
                     FAQ
@@ -253,6 +263,12 @@ function AppAppBar({ mode, toggleColorMode, includeHomePageLink = false }: AppAp
             </Box>
           </Toolbar>
         </Container>
+        {/* Scroll to top button */}
+        <ScrollToTop className='mui-fixed'>
+          <Fab color='primary' size='small' aria-label='scroll back to top'>
+            <ArrowUp />
+          </Fab>
+        </ScrollToTop>
       </AppBar>
     </div>
   );

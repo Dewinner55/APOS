@@ -16,7 +16,7 @@ interface FeaturedPostProps {
   };
 }
 
-export default function FeaturedPost(props: FeaturedPostProps) {
+const FeaturedPost = (props) => {
   const { post } = props;
 
   return (
@@ -37,14 +37,11 @@ export default function FeaturedPost(props: FeaturedPostProps) {
               Continue reading...
             </Typography>
           </CardContent>
-          <CardMedia
-            component="img"
-            sx={{ width: 160, display: { xs: 'none', sm: 'block' } }}
-            image={post.image}
-            alt={post.imageLabel}
-          />
+          <CardMedia component="img" sx={{ width: 160, display: { xs: 'none', sm: 'block' } }} image={post.image} alt={post.imageLabel} />
         </Card>
       </CardActionArea>
     </Grid>
   );
-}
+};
+
+export default FeaturedPost;
