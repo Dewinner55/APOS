@@ -77,7 +77,11 @@ const logoStyle = {
   opacity: 0.3,
 };
 
-export default function Testimonials() {
+interface TestimonialsProps {
+  id: string;
+}
+
+export default function Testimonials({ id }: TestimonialsProps) {
   const theme = useTheme();
   const logos = theme.palette.mode === 'light' ? darkLogos : whiteLogos;
 

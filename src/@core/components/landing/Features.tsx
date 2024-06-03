@@ -40,7 +40,11 @@ const items = [
   },
 ];
 
-export default function Features() {
+interface FeaturesProps {
+  id: string;
+}
+
+export default function Features({ id }: FeaturesProps) {
   const [selectedItemIndex, setSelectedItemIndex] = React.useState(0);
 
   const handleItemClick = (index: number) => {

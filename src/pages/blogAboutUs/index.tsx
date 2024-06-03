@@ -8,13 +8,13 @@ import MainFeaturedPost from "src/@core/components/landing/blogAboutUs/MainFeatu
 import FeaturedPost from "src/@core/components/landing/blogAboutUs/FeaturedPost";
 import Main from "src/@core/components/landing/blogAboutUs/Main";
 import Footer from "src/@core/components/landing/Footer";
-import {PaletteMode} from "@mui/material";
 import {ReactNode} from "react";
 import BlankLayout from "src/@core/layouts/BlankLayout";
 import FacebookIcon from "@mui/icons-material/GitHub";
 import GitHubIcon from '@mui/icons-material/GitHub';
 import XIcon from '@mui/icons-material/X';
 import Sidebar from "src/@core/components/landing/blogAboutUs/Sidebar";
+import {useThemeMode} from "src/@core/hooks/useThemeMode";
 
 
 const mainFeaturedPost = {
@@ -135,18 +135,14 @@ const posts = [
 ];
 
 const Blog = () => {
-  const [mode, setMode] = React.useState<PaletteMode>('light');
+  const { mode, toggleColorMode, theme } = useThemeMode('light');
   const defaultTheme = createTheme({palette: {mode}});
-
-  const toggleColorMode = () => {
-    setMode((prev) => (prev === 'dark' ? 'light' : 'dark'));
-  };
 
   return (
     <ThemeProvider theme={defaultTheme}>
       <CssBaseline/>
       <Container maxWidth="lg">
-        <AppAppBar mode={mode} toggleColorMode={toggleColorMode}/>
+        <AppAppBar mode={mode} toggleColorMode={toggleColorMode} includeHomePageLink={true}/>
         <main>
           <MainFeaturedPost post={mainFeaturedPost}/>
           <Grid container spacing={4}>

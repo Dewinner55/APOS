@@ -51,7 +51,11 @@ const items = [
   },
 ];
 
-export default function Highlights() {
+interface HighlightsProps {
+  id: string;
+}
+
+export default function Highlights({ id }: HighlightsProps) {
   return (
     <Box
       id="highlights"

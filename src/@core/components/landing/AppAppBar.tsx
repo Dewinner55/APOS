@@ -15,9 +15,10 @@ import ToggleColorMode from './ToggleColorMode';
 interface AppAppBarProps {
   mode: PaletteMode;
   toggleColorMode: () => void;
+  includeHomePageLink?: boolean; // Новый аргумент для включения перехода на главную страницу
 }
 
-function AppAppBar({ mode, toggleColorMode }: AppAppBarProps) {
+function AppAppBar({ mode, toggleColorMode, includeHomePageLink = false }: AppAppBarProps) {
   const [open, setOpen] = React.useState(false);
 
   const toggleDrawer = (newOpen: boolean) => () => {
@@ -90,39 +91,69 @@ function AppAppBar({ mode, toggleColorMode }: AppAppBarProps) {
               />
               <Box sx={{display: {xs: 'none', md: 'flex'}}}>
                 <MenuItem
-                  onClick={() => scrollToSection('features')}
+                  onClick={() => {
+                    if (includeHomePageLink) {
+                      window.location.href = '/#features';
+                    } else {
+                      scrollToSection('features');
+                    }
+                  }}
                   sx={{py: '6px', px: '12px'}}
                 >
                   <Typography variant="body2" color="text.primary">
-                    Features
+                    Функции
                   </Typography>
                 </MenuItem>
                 <MenuItem
-                  onClick={() => scrollToSection('testimonials')}
+                  onClick={() => {
+                    if (includeHomePageLink) {
+                      window.location.href = '/#testimonials';
+                    } else {
+                      scrollToSection('testimonials');
+                    }
+                  }}
                   sx={{py: '6px', px: '12px'}}
                 >
                   <Typography variant="body2" color="text.primary">
-                    Testimonials
+                    Отзывы
                   </Typography>
                 </MenuItem>
                 <MenuItem
-                  onClick={() => scrollToSection('highlights')}
+                  onClick={() => {
+                    if (includeHomePageLink) {
+                      window.location.href = '/#highlights';
+                    } else {
+                      scrollToSection('highlights');
+                    }
+                  }}
                   sx={{py: '6px', px: '12px'}}
                 >
                   <Typography variant="body2" color="text.primary">
-                    Highlights
+                    Моменты
                   </Typography>
                 </MenuItem>
                 <MenuItem
-                  onClick={() => scrollToSection('pricing')}
+                  onClick={() => {
+                    if (includeHomePageLink) {
+                      window.location.href = '/#pricing';
+                    } else {
+                      scrollToSection('pricing');
+                    }
+                  }}
                   sx={{py: '6px', px: '12px'}}
                 >
                   <Typography variant="body2" color="text.primary">
-                    Pricing
+                    Цена
                   </Typography>
                 </MenuItem>
                 <MenuItem
-                  onClick={() => scrollToSection('faq')}
+                  onClick={() => {
+                    if (includeHomePageLink) {
+                      window.location.href = '/#faq';
+                    } else {
+                      scrollToSection('faq');
+                    }
+                  }}
                   sx={{py: '6px', px: '12px'}}
                 >
                   <Typography variant="body2" color="text.primary">

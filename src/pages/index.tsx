@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { PaletteMode } from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
@@ -14,9 +13,10 @@ import Highlights from "src/@core/components/landing/Highlights";
 import Pricing from "src/@core/components/landing/Pricing";
 import FAQ from "src/@core/components/landing/FAQ";
 import Footer from "src/@core/components/landing/Footer";
-import {ReactNode} from "react";
+import {ReactNode, useEffect} from "react";
 import BlankLayout from "src/@core/layouts/BlankLayout";
 import {GetStaticProps} from "next";
+import {useThemeMode} from "src/@core/hooks/useThemeMode";
 
 export const getStaticProps: GetStaticProps = async () => {
 
@@ -27,32 +27,84 @@ export const getStaticProps: GetStaticProps = async () => {
   };
 };
 
+const smoothScrollTo = (targetY: number, duration: number) => {
+  const startingY = window.pageYOffset;
+  const diff = targetY - startingY;
+  let startTime: number | null = null;
+
+  function step(timestamp: number) {
+    if (startTime === null) startTime = timestamp;
+    const elapsedTime = timestamp - startTime;
+    const progress = Math.min(elapsedTime / duration, 1);
+    const easeInOutCubic = (t: number) => t < 0.5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1;
+    const easedProgress = easeInOutCubic(progress);
+
+    window.scrollTo(0, startingY + diff * easedProgress);
+
+    if (elapsedTime < duration) {
+      window.requestAnimationFrame(step);
+    }
+  }
+
+  window.requestAnimationFrame(step);
+};
+
 const LandingPage = () => {
-  const [mode, setMode] = React.useState<PaletteMode>('light');
+  const { mode, toggleColorMode, theme } = useThemeMode('light');
   const [showCustomTheme, setShowCustomTheme] = React.useState(true);
   const LPtheme = createTheme(getLPTheme(mode));
   const defaultTheme = createTheme({ palette: { mode } });
 
-  const toggleColorMode = () => {
-    setMode((prev) => (prev === 'dark' ? 'light' : 'dark'));
-  };
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash;
+      let sectionId = '';
+      if (hash === '#features') {
+        sectionId = 'features';
+      } else if (hash === '#testimonials') {
+        sectionId = 'testimonials';
+      } else if (hash === '#highlights') {
+        sectionId = 'highlights';
+      } else if (hash === '#pricing') {
+        sectionId = 'pricing';
+      } else if (hash === '#faq') {
+        sectionId = 'faq';
+      }
+
+      if (sectionId) {
+        const sectionElement = document.getElementById(sectionId);
+        if (sectionElement) {
+          const offset = 128;
+          const targetScroll = sectionElement.offsetTop - offset;
+          smoothScrollTo(targetScroll, 1000); // Smooth scroll to target with duration of 1000ms (1s)
+        }
+      }
+    };
+
+    window.addEventListener('hashchange', handleHashChange);
+    handleHashChange(); // Handle initial hash
+
+    return () => {
+      window.removeEventListener('hashchange', handleHashChange);
+    };
+  }, []);
 
   return (
     <ThemeProvider theme={showCustomTheme ? LPtheme : defaultTheme}>
       <CssBaseline />
-      <AppAppBar mode={mode} toggleColorMode={toggleColorMode} />
+      <AppAppBar mode={mode} toggleColorMode={toggleColorMode}/>
       <Hero />
       <Box sx={{ bgcolor: 'background.default' }}>
         <LogoCollection />
-        <Features />
+        <Features id="features" />
         <Divider />
-        <Testimonials />
+        <Testimonials id="testimonials" />
         <Divider />
-        <Highlights />
+        <Highlights id="highlights" />
         <Divider />
-        <Pricing />
+        <Pricing id="pricing" />
         <Divider />
-        <FAQ />
+        <FAQ id="faq" />
         <Divider />
         <Footer />
       </Box>

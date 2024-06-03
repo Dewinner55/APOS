@@ -54,7 +54,11 @@ const tiers = [
   },
 ];
 
-export default function Pricing() {
+interface PricingProps {
+  id: string;
+}
+
+export default function Pricing({ id }: PricingProps) {
   return (
     <Container
       id="pricing"
