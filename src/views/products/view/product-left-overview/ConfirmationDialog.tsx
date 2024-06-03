@@ -1,11 +1,10 @@
 'use client'
 
 // React Imports
-import React, {useEffect, useState} from 'react'
+import {useEffect, useState} from 'react'
 
 // Next Imports
 import {useRouter} from "next/router";
-import {useTranslations} from "next-intl";
 
 // Axios API
 import {axiosClassic} from "src/api/interseptor";
@@ -22,32 +21,29 @@ import IconButton from "@mui/material/IconButton";
 import FormControl from "@mui/material/FormControl";
 import TextField from "@mui/material/TextField";
 import {DialogContentText, Grid} from "@mui/material";
-import LinearProgress from "@mui/material/LinearProgress";
-
-// Components Imports
-import TableFilters from "src/views/category/list/filter/TableFilters";
 
 // SSR Imports
 import {checkAndRefreshToken} from "src/@core/SSR/cookie/getTokenExpiry";
 
 // Types Imports
-import {FormDataType} from "src/@core/types/category/types";
+import {FormDataType} from "src/@core/types/brands/types";
 
 // Interface Imports
-import {Category} from "src/@core/interface/category/interface";
-import {Subcategory} from "src/@core/interface/subcategory/interface";
+import {Brands} from "src/@core/interface/brands/interface";
 import {Language} from "src/@core/interface/language/interface";
+import LinearProgress from "@mui/material/LinearProgress";
+import TableFilters from "src/views/category/list/filter/TableFilters";
+import {useTranslations} from "next-intl";
 
 type Props = {
-  categories: Category[];
-  subcategory: Subcategory;
+  brand: Brands;
   languages: Language[];
   open: boolean
   setOpen: (open: boolean) => void
   showSuccessMessage: (message: string) => void;
 }
 
-const ConfirmationDialog = ({ categories, subcategory, languages, open, setOpen, showSuccessMessage}: Props) => {
+const ConfirmationDialog = ({brand, languages, open, setOpen, showSuccessMessage}: Props) => {
   const t = useTranslations('categoryList');
   const router = useRouter();
 
@@ -55,13 +51,13 @@ const ConfirmationDialog = ({ categories, subcategory, languages, open, setOpen,
   const initialData: FormDataType = Object.fromEntries(
     languages.map((lang) => [
       lang.language_code,
-      {lang_code: lang.language_code, image: '', content: {title: '', description: ''}}
+      {lang_code: lang.language_code, icon: '', content: {name: '', description: ''}}
     ])
   );
   const [formData, setFormData] = useState<FormDataType>(initialData);
 
   // Состояние для изображения категории
-  const [, setEditSubcategoryImage] = useState<File | null>(null);
+  const [, setEditBrandImage] = useState<File | null>(null);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
 
   // Состояния для отображения загрузки и сообщения о пустых полях
@@ -72,27 +68,27 @@ const ConfirmationDialog = ({ categories, subcategory, languages, open, setOpen,
   const [selectedLang, setSelectedLang] = useState<string>('ru');
 
   useEffect(() => {
-    if (subcategory && subcategory.image) {
-      setPreviewImage(subcategory.image);
+    if (brand && brand.icon) {
+      setPreviewImage(brand.icon);
     }
-  }, [subcategory]);
+  }, [brand]);
 
   useEffect(() => {
-    if (subcategory) {
+    if (brand) {
       const newData: FormDataType = {...initialData};
 
       const updateDataForLanguage = (langCode: string) => {
-        const langData = subcategory.translate_content?.find((content) => content.lang_code === langCode) || {
-          content: {title: t("noDataAvailable"), description: t("noDataAvailable")},
+        const langData = brand.translate_content?.find((content) => content.lang_code === langCode) || {
+          content: {name: t("noDataAvailable"), description: t("noDataAvailable")},
         };
 
         newData[langCode] = {
           lang_code: langCode,
           content: {
-            title: langData.content.title,
+            name: langData.content.name,
             description: langData.content.description,
           },
-          image: subcategory.image || '',
+          icon: brand.icon || '',
         };
       };
 
@@ -104,14 +100,14 @@ const ConfirmationDialog = ({ categories, subcategory, languages, open, setOpen,
     } else {
       setFormData(initialData);
     }
-  }, [subcategory, open, languages]);
+  }, [brand, open, languages]);
 
-  const currentData = formData[selectedLang] || {title: '', description: ''};
+  const currentData = formData[selectedLang] || { name: '', description: '' };
 
   const handleDeleteImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files && event.target.files[0];
     if (file) {
-      setEditSubcategoryImage(file);
+      setEditBrandImage(file);
       setPreviewImage(URL.createObjectURL(file));
     }
   };
@@ -122,8 +118,8 @@ const ConfirmationDialog = ({ categories, subcategory, languages, open, setOpen,
     const currentLangData = formData[selectedLang];
     setLoading(true);
 
+    // Добавляем проверку токена
     try {
-      // Проверка токена
       const isTokenValid = await checkAndRefreshToken();
       if (!isTokenValid) {
         alert('Токен недействителен. Пожалуйста, войдите снова.');
@@ -140,14 +136,14 @@ const ConfirmationDialog = ({ categories, subcategory, languages, open, setOpen,
     }
 
     try {
-      // Передаем ID подкатегории в URL
-      const SubcategoryId = subcategory?.id;
-      const imageId = subcategory?.image;
+      // Передаем ID категории в URL
+      const brandId = brand?.id;
+      const imageId = brand?.icon;
 
-      // Удаляем изображение и подкатегорию одним запросом
+      // Удаляем изображение и категорию одним запросом
       await Promise.all([
-        axiosClassic.delete(`/subcategory-admin/delete_file?id=${SubcategoryId}&image_path=${imageId}`),
-        axiosClassic.delete(`/subcategory-admin?subcategory_id=${SubcategoryId}`, {
+        axiosClassic.delete(`/category-admin/delete-file?id=${brandId}&file_path=${imageId}`),
+        axiosClassic.delete(`/category-admin?category_id=${brandId}`, {
           data: {
             translate_content: [
               {
@@ -155,7 +151,7 @@ const ConfirmationDialog = ({ categories, subcategory, languages, open, setOpen,
                 content: currentLangData.content,
               },
             ],
-          },
+          }
         }),
       ]);
 
@@ -175,12 +171,9 @@ const ConfirmationDialog = ({ categories, subcategory, languages, open, setOpen,
     setSubmitSuccess(false);
   };
 
-  const handleSubcategoryList = () => {
-    router.push(`/subcategory/list`);
+  const handleCategoryList = () => {
+    router.push(`/category/list`);
   };
-
-  const categoryTitle = categories.find(cat => cat.id === subcategory?.category_id)
-    ?.translate_content?.find(content => content.lang_code === selectedLang)?.content.title || 'Translation not available';
 
   return (
     <Dialog fullWidth open={open} onClose={handleReset} maxWidth='md' scroll='body'>
@@ -213,33 +206,15 @@ const ConfirmationDialog = ({ categories, subcategory, languages, open, setOpen,
                 languages={languages}
               />
               <TextField
-                label="Категория"
+                label={t("name")}
                 fullWidth
-                value={categoryTitle}
-                InputProps={{style: {pointerEvents: 'none'}}}
-                onChange={(event) => ((prev) => {
-                  const selectedLangData = prev[selectedLang] || {content: {title: '', description: ''}};
-
-                  return {
-                    ...prev,
-                    [selectedLang]: {
-                      ...selectedLangData,
-                      content: {...selectedLangData.content, title: event.target.value}
-                    }
-                  };
-                })}
-                sx={{marginBottom: 4, marginTop: 2}}
-              />
-              <TextField
-                label={t("title")}
-                fullWidth
-                value={currentData?.content?.title || ''}
+                value={currentData?.content?.name || ''}
                 InputProps={{
                   style: { pointerEvents: 'none' } // не позволяет кликать на поле
                 }}
                 onChange={(event) =>
                   setFormData((prev) => {
-                    const selectedLangData = prev[selectedLang] || {content: {title: '', description: ''}};
+                    const selectedLangData = prev[selectedLang] || {content: {name: '', description: ''}};
 
                     return {
                       ...prev,
@@ -247,7 +222,7 @@ const ConfirmationDialog = ({ categories, subcategory, languages, open, setOpen,
                         ...selectedLangData,
                         content: {
                           ...selectedLangData.content,
-                          title: event.target.value,
+                          name: event.target.value,
                         },
                       },
                     };
@@ -266,7 +241,7 @@ const ConfirmationDialog = ({ categories, subcategory, languages, open, setOpen,
                 value={currentData?.content?.description || ''}
                 onChange={(event) =>
                   setFormData((prev) => {
-                    const selectedLangData = prev[selectedLang] || {content: {title: '', description: ''}};
+                    const selectedLangData = prev[selectedLang] || {content: {name: '', description: ''}};
 
                     return {
                       ...prev,
@@ -285,51 +260,32 @@ const ConfirmationDialog = ({ categories, subcategory, languages, open, setOpen,
             </Grid>
             <Grid item xs={12} sm={6} style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
               <FormControl fullWidth>
-                <input
-                  type='file'
-                  id='image-upload-edit'
-                  accept='image/*'
-                  onChange={handleDeleteImageChange}
-                  style={{display: 'none'}}
-                  disabled={true}
-                />
-                <label htmlFor='image-upload-edit' style={{width: '100%', textAlign: 'center'}}>
-                  <Button
-                    component='span'
-                    variant='outlined'
-                    color='primary'
-                    style={{
-                      width: '100%',
-                      height: '250px',
-                      position: 'relative',
-                      overflow: 'hidden',
-                      display: 'flex',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      flexDirection: 'column',
-                      textAlign: 'center',
-                      cursor: 'pointer',
-                    }}
-                  >
-                    {previewImage ? (
-                      <img
-                        key={previewImage}
-                        src={previewImage}
-                        alt='Uploaded'
-                        style={{
-                          width: '100%',
-                          height: '100%',
-                          objectFit: 'cover',
-                          position: 'absolute',
-                          top: 0,
-                          left: 0,
-                        }}
-                      />
-                    ) : (
-                      t('noImage')
-                    )}
-                  </Button>
-                </label>
+                <div
+                  style={{
+                    width: '100%',
+                    height: '250px',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    border: '1px dashed grey',
+                  }}
+                >
+                  {currentData.icon ? (
+                    <img
+                      src={currentData.icon}
+                      alt='Brand'
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover',
+                      }}
+                    />
+                  ) : (
+                    <Typography variant='subtitle1'>
+                      {t('noImage')}
+                    </Typography>
+                  )}
+                </div>
               </FormControl>
             </Grid>
           </Grid>
@@ -343,7 +299,7 @@ const ConfirmationDialog = ({ categories, subcategory, languages, open, setOpen,
           </Button>
         </DialogActions>
       </form>
-      <Dialog open={submitSuccess} onClick={handleSubcategoryList}>
+      <Dialog open={submitSuccess} onClick={handleCategoryList}>
         <DialogTitle>{t("successfully")}</DialogTitle>
         <DialogContent>
           <DialogContentText>{t("successDelete")}</DialogContentText>

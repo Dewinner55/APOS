@@ -27,24 +27,27 @@ import LinearProgress from "@mui/material/LinearProgress";
 // Filters Imports
 import TableFilters from "src/views/category/list/filter/TableFilters";
 
+// SSR Imports
+import {checkAndRefreshToken} from "src/@core/SSR/cookie/getTokenExpiry";
+
 // Types Imports
-import {FormDataType} from "src/@core/types/category/types";
+import {FormDataType} from "src/@core/types/brands/types";
 
 // Interface Imports
-import {Category} from "src/@core/interface/category/interface";
+import {Brands} from "src/@core/interface/brands/interface";
 import {Language} from "src/@core/interface/language/interface";
 import {StyledSnackbar} from "src/views/category/styles/styles";
 import {useTranslations} from "next-intl";
 
 type Props = {
-  category: Category;
+  brand: Brands;
   languages: Language[];
   open: boolean
   setOpen: (open: boolean) => void
   showSuccessMessage: (message: string) => void;
 }
 
-const EditBrandsInfo = ({ category, languages, open, setOpen, showSuccessMessage }: Props) => {
+const EditBrandsInfo = ({ brand, languages, open, setOpen, showSuccessMessage }: Props) => {
   const t = useTranslations('categoryList');
   const router = useRouter();
 
@@ -52,13 +55,13 @@ const EditBrandsInfo = ({ category, languages, open, setOpen, showSuccessMessage
   const initialData: FormDataType = Object.fromEntries(
     languages.map((lang) => [
       lang.language_code,
-      { lang_code: lang.language_code, image: '', content: { title: '', description: '' } }
+      { lang_code: lang.language_code, icon: '', content: { name: '', description: '' } }
     ])
   );
   const [formData, setFormData] = useState<FormDataType>(initialData);
 
   // Состояние для изображения категории
-  const [editCategoryImage, setEditCategoryImage] = useState<File | null>(null);
+  const [editBrandImage, setEditBrandImage] = useState<File | null>(null);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
 
   // Состояние для отображения загрузки
@@ -72,27 +75,27 @@ const EditBrandsInfo = ({ category, languages, open, setOpen, showSuccessMessage
   const [selectedLang, setSelectedLang] = useState<string>('ru');
 
   useEffect(() => {
-    if (category && category.image) {
-      setPreviewImage(category.image);
+    if (brand && brand.icon) {
+      setPreviewImage(brand.icon);
     }
-  }, [category]);
+  }, [brand]);
 
   useEffect(() => {
-    if (category) {
+    if (brand) {
       const newData: FormDataType = { ...initialData };
 
       const updateDataForLanguage = (langCode: string) => {
-        const langData = category.translate_content.find((content) => content.lang_code === langCode) || {
-          content: { title: '', description: '' },
+        const langData = brand.translate_content.find((content) => content.lang_code === langCode) || {
+          content: { name: '', description: '' },
         };
 
         newData[langCode] = {
           lang_code: langCode,
           content: {
-            title: langData.content.title,
+            name: langData.content.name,
             description: langData.content.description,
           },
-          image: category.image || '',
+          icon: brand.icon || '',
         };
       };
 
@@ -104,14 +107,14 @@ const EditBrandsInfo = ({ category, languages, open, setOpen, showSuccessMessage
     } else {
       setFormData(initialData);
     }
-  }, [category, open, languages]);
+  }, [brand, open, languages]);
 
   const currentData = formData[selectedLang] || { title: '', description: '' };
 
   const handleEditImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files && event.target.files[0];
     if (file) {
-      setEditCategoryImage(file);
+      setEditBrandImage(file);
       setPreviewImage(URL.createObjectURL(file));
     }
   };
@@ -120,58 +123,51 @@ const EditBrandsInfo = ({ category, languages, open, setOpen, showSuccessMessage
     event.preventDefault();
 
     const currentLangData = formData[selectedLang];
-
-    // Проверяем, что хотя бы одно из полей не пустое
-    if (!currentLangData.content.title && !currentLangData.content.description) {
+    if (!currentLangData.content.name && !currentLangData.content.description) {
       setShowEmptyFieldsMessage(true);
 
       return;
     }
 
-    // Формируем данные для отправки
-    const dataToSend = {
-      translate_content: []
-    };
+    // Добавляем проверку токена
+    try {
+      const isTokenValid = await checkAndRefreshToken();
+      if (!isTokenValid) {
+        alert('Токен недействителен. Пожалуйста, войдите снова.');
+        setLoading(false);
 
+        return;
+      }
+    } catch (tokenError) {
+      console.error('Ошибка проверки токена:', tokenError);
+      alert('Произошла ошибка при проверке токена. Пожалуйста, попробуйте еще раз.');
+      setLoading(false);
+
+      return;
+    }
+
+    // Формируем данные для отправки
+    const dataToSend = { translate_content: [] };
     Object.entries(formData).forEach(([langCode, langData]) => {
-      if (langData.content.title.trim().length > 0 || langData.content.description.trim().length > 0) {
+      if (langData.content.name.trim().length > 0 || langData.content.description.trim().length > 0) {
         // @ts-ignore
         dataToSend.translate_content.push({ lang_code: langCode, content: langData.content });
       }
     });
 
     setLoading(true);
-    let fileUploadSuccess = false;
     let createdSuccess = false;
 
     try {
-      // Передаем ID категории в URL
-      const categoryId = category?.id;
-      await axiosClassic.patch(`/category-admin?category_id=${categoryId}`, dataToSend);
+      await axiosClassic.post('/brand-admin', dataToSend);
+      setFormData(initialData);
       createdSuccess = true;
-
-      // Проверка расширения файла
-      const fileExtension = editCategoryImage?.name.split('.').pop()?.toLowerCase();
-      if (editCategoryImage && (!fileExtension || !['jpg', 'jpeg', 'png', 'gif'].includes(fileExtension))) {
-        throw new Error(t('errorFile'));
-      }
-
-      // Загрузка файла, если editCategoryImage не равен null или undefined
-      const formDataFile = new FormData();
-      if (editCategoryImage) {
-        formDataFile.append('image', editCategoryImage, editCategoryImage.name);
-        await axiosClassic.patch(`/category-admin/add-file?id=${categoryId}`, formDataFile, {
-          headers: {
-            'Content-Type': 'multipart/form-data'
-          }
-        });
-        fileUploadSuccess = true;
-      }
+      showSuccessMessage(t("successCreated"));
     } catch (error) {
       console.error(t('errorUpdate'), error);
     } finally {
       setLoading(false);
-      if (fileUploadSuccess || createdSuccess) {
+      if (createdSuccess) {
         showSuccessMessage(t("successUpdate"));
         setSubmitSuccess(true);
         router.push(router.asPath);
@@ -218,7 +214,7 @@ const EditBrandsInfo = ({ category, languages, open, setOpen, showSuccessMessage
               <TextField
                 label={t("title")}
                 fullWidth
-                value={currentData?.content?.title || ''}
+                value={currentData?.content?.name || ''}
                 onChange={(event) =>
                   setFormData((prev) => {
                     const selectedLangData = prev[selectedLang] || {content: {title: '', description: ''}};

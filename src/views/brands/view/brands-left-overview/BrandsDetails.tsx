@@ -19,8 +19,8 @@ import CardMedia from "@mui/material/CardMedia";
 import {ThemeColor} from "src/@core/types";
 
 // Component Imports
-import ConfirmationDialog from "src/views/category/view/category-left-overview/ConfirmationDialog";
-import EditCategoryInfo from "src/views/category/view/category-left-overview/EditCategoryInfo";
+import ConfirmationDialog from "src/views/brands/view/brands-left-overview/ConfirmationDialog";
+import EditBrandsInfo from "src/views/brands/view/brands-left-overview/EditBrandsInfo";
 import OpenDialogOnElementClick from 'src/@core/components/dialogs/OpenDialogOnElementClick'
 
 
@@ -119,7 +119,7 @@ const BrandsDetails = ({ userProfile, brand, languages }: Props) => {
             <OpenDialogOnElementClick
               element={Button}
               elementProps={buttonProps(t("Edit"), 'primary', 'contained')}
-              dialog={EditCategoryInfo}
+              dialog={EditBrandsInfo}
               dialogProps={{
                 brand: brand,
                 languages: languages,

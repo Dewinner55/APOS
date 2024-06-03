@@ -22,28 +22,25 @@ import FormControl from "@mui/material/FormControl";
 import TextField from "@mui/material/TextField";
 import {DialogContentText, Grid} from "@mui/material";
 
-// SSR Imports
-import {checkAndRefreshToken} from "src/@core/SSR/cookie/getTokenExpiry";
-
 // Types Imports
-import {FormDataType} from "src/@core/types/brands/types";
+import {FormDataType} from "src/@core/types/category/types";
 
 // Interface Imports
-import {Brands} from "src/@core/interface/brands/interface";
+import {Category} from "src/@core/interface/category/interface";
 import {Language} from "src/@core/interface/language/interface";
 import LinearProgress from "@mui/material/LinearProgress";
 import TableFilters from "src/views/category/list/filter/TableFilters";
 import {useTranslations} from "next-intl";
 
 type Props = {
-  brand: Brands;
+  category: Category;
   languages: Language[];
   open: boolean
   setOpen: (open: boolean) => void
   showSuccessMessage: (message: string) => void;
 }
 
-const ConfirmationDialog = ({brand, languages, open, setOpen, showSuccessMessage}: Props) => {
+const ConfirmationDialog = ({category, languages, open, setOpen, showSuccessMessage}: Props) => {
   const t = useTranslations('categoryList');
   const router = useRouter();
 
@@ -51,13 +48,13 @@ const ConfirmationDialog = ({brand, languages, open, setOpen, showSuccessMessage
   const initialData: FormDataType = Object.fromEntries(
     languages.map((lang) => [
       lang.language_code,
-      {lang_code: lang.language_code, icon: '', content: {name: '', description: ''}}
+      {lang_code: lang.language_code, image: '', content: {title: '', description: ''}}
     ])
   );
   const [formData, setFormData] = useState<FormDataType>(initialData);
 
   // Состояние для изображения категории
-  const [, setEditBrandImage] = useState<File | null>(null);
+  const [, setEditCategoryImage] = useState<File | null>(null);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
 
   // Состояния для отображения загрузки и сообщения о пустых полях
@@ -68,27 +65,27 @@ const ConfirmationDialog = ({brand, languages, open, setOpen, showSuccessMessage
   const [selectedLang, setSelectedLang] = useState<string>('ru');
 
   useEffect(() => {
-    if (brand && brand.icon) {
-      setPreviewImage(brand.icon);
+    if (category && category.image) {
+      setPreviewImage(category.image);
     }
-  }, [brand]);
+  }, [category]);
 
   useEffect(() => {
-    if (brand) {
+    if (category) {
       const newData: FormDataType = {...initialData};
 
       const updateDataForLanguage = (langCode: string) => {
-        const langData = brand.translate_content?.find((content) => content.lang_code === langCode) || {
-          content: {name: t("noDataAvailable"), description: t("noDataAvailable")},
+        const langData = category.translate_content?.find((content) => content.lang_code === langCode) || {
+          content: {title: t("noDataAvailable"), description: t("noDataAvailable")},
         };
 
         newData[langCode] = {
           lang_code: langCode,
           content: {
-            name: langData.content.name,
+            title: langData.content.title,
             description: langData.content.description,
           },
-          icon: brand.icon || '',
+          image: category.image || '',
         };
       };
 
@@ -100,50 +97,34 @@ const ConfirmationDialog = ({brand, languages, open, setOpen, showSuccessMessage
     } else {
       setFormData(initialData);
     }
-  }, [brand, open, languages]);
+  }, [category, open, languages]);
 
-  const currentData = formData[selectedLang] || { name: '', description: '' };
+  const currentData = formData[selectedLang] || {title: '', description: ''};
 
   const handleDeleteImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files && event.target.files[0];
     if (file) {
-      setEditBrandImage(file);
+      setEditCategoryImage(file);
       setPreviewImage(URL.createObjectURL(file));
     }
   };
 
   const handleDeleteSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+    event.preventDefault()
 
     const currentLangData = formData[selectedLang];
+
     setLoading(true);
-
-    // Добавляем проверку токена
-    try {
-      const isTokenValid = await checkAndRefreshToken();
-      if (!isTokenValid) {
-        alert('Токен недействителен. Пожалуйста, войдите снова.');
-        setLoading(false);
-
-        return;
-      }
-    } catch (tokenError) {
-      console.error('Ошибка проверки токена:', tokenError);
-      alert('Произошла ошибка при проверке токена. Пожалуйста, попробуйте еще раз.');
-      setLoading(false);
-
-      return;
-    }
 
     try {
       // Передаем ID категории в URL
-      const brandId = brand?.id;
-      const imageId = brand?.icon;
+      const categoryId = category?.id;
+      const imageId = category?.image;
 
       // Удаляем изображение и категорию одним запросом
       await Promise.all([
-        axiosClassic.delete(`/category-admin/delete-file?id=${brandId}&file_path=${imageId}`),
-        axiosClassic.delete(`/category-admin?category_id=${brandId}`, {
+        axiosClassic.delete(`/category-admin/delete-file?id=${categoryId}&file_path=${imageId}`),
+        axiosClassic.delete(`/category-admin?category_id=${categoryId}`, {
           data: {
             translate_content: [
               {
@@ -151,7 +132,7 @@ const ConfirmationDialog = ({brand, languages, open, setOpen, showSuccessMessage
                 content: currentLangData.content,
               },
             ],
-          }
+          },
         }),
       ]);
 
@@ -206,15 +187,15 @@ const ConfirmationDialog = ({brand, languages, open, setOpen, showSuccessMessage
                 languages={languages}
               />
               <TextField
-                label={t("name")}
+                label={t("title")}
                 fullWidth
-                value={currentData?.content?.name || ''}
+                value={currentData?.content?.title || ''}
                 InputProps={{
                   style: { pointerEvents: 'none' } // не позволяет кликать на поле
                 }}
                 onChange={(event) =>
                   setFormData((prev) => {
-                    const selectedLangData = prev[selectedLang] || {content: {name: '', description: ''}};
+                    const selectedLangData = prev[selectedLang] || {content: {title: '', description: ''}};
 
                     return {
                       ...prev,
@@ -222,7 +203,7 @@ const ConfirmationDialog = ({brand, languages, open, setOpen, showSuccessMessage
                         ...selectedLangData,
                         content: {
                           ...selectedLangData.content,
-                          name: event.target.value,
+                          title: event.target.value,
                         },
                       },
                     };
@@ -241,7 +222,7 @@ const ConfirmationDialog = ({brand, languages, open, setOpen, showSuccessMessage
                 value={currentData?.content?.description || ''}
                 onChange={(event) =>
                   setFormData((prev) => {
-                    const selectedLangData = prev[selectedLang] || {content: {name: '', description: ''}};
+                    const selectedLangData = prev[selectedLang] || {content: {title: '', description: ''}};
 
                     return {
                       ...prev,
@@ -260,32 +241,51 @@ const ConfirmationDialog = ({brand, languages, open, setOpen, showSuccessMessage
             </Grid>
             <Grid item xs={12} sm={6} style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
               <FormControl fullWidth>
-                <div
-                  style={{
-                    width: '100%',
-                    height: '250px',
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    border: '1px dashed grey',
-                  }}
-                >
-                  {currentData.icon ? (
-                    <img
-                      src={currentData.icon}
-                      alt='Brand'
-                      style={{
-                        width: '100%',
-                        height: '100%',
-                        objectFit: 'cover',
-                      }}
-                    />
-                  ) : (
-                    <Typography variant='subtitle1'>
-                      {t('noImage')}
-                    </Typography>
-                  )}
-                </div>
+                <input
+                  type='file'
+                  id='image-upload-edit'
+                  accept='image/*'
+                  onChange={handleDeleteImageChange}
+                  style={{display: 'none'}}
+                  disabled={true}
+                />
+                <label htmlFor='image-upload-edit' style={{width: '100%', textAlign: 'center'}}>
+                  <Button
+                    component='span'
+                    variant='outlined'
+                    color='primary'
+                    style={{
+                      width: '100%',
+                      height: '250px',
+                      position: 'relative',
+                      overflow: 'hidden',
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      flexDirection: 'column',
+                      textAlign: 'center',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    {previewImage ? (
+                      <img
+                        key={previewImage}
+                        src={previewImage}
+                        alt='Uploaded'
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          objectFit: 'cover',
+                          position: 'absolute',
+                          top: 0,
+                          left: 0,
+                        }}
+                      />
+                    ) : (
+                      t('noImage')
+                    )}
+                  </Button>
+                </label>
               </FormControl>
             </Grid>
           </Grid>

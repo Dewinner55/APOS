@@ -27,27 +27,24 @@ import LinearProgress from "@mui/material/LinearProgress";
 // Filters Imports
 import TableFilters from "src/views/category/list/filter/TableFilters";
 
-// SSR Imports
-import {checkAndRefreshToken} from "src/@core/SSR/cookie/getTokenExpiry";
-
 // Types Imports
-import {FormDataType} from "src/@core/types/brands/types";
+import {FormDataType} from "src/@core/types/category/types";
 
 // Interface Imports
-import {Brands} from "src/@core/interface/brands/interface";
+import {Category} from "src/@core/interface/category/interface";
 import {Language} from "src/@core/interface/language/interface";
 import {StyledSnackbar} from "src/views/category/styles/styles";
 import {useTranslations} from "next-intl";
 
 type Props = {
-  brand: Brands;
+  category: Category;
   languages: Language[];
   open: boolean
   setOpen: (open: boolean) => void
   showSuccessMessage: (message: string) => void;
 }
 
-const EditCategoryInfo = ({ brand, languages, open, setOpen, showSuccessMessage }: Props) => {
+const EditCategoryInfo = ({ category, languages, open, setOpen, showSuccessMessage }: Props) => {
   const t = useTranslations('categoryList');
   const router = useRouter();
 
@@ -55,13 +52,13 @@ const EditCategoryInfo = ({ brand, languages, open, setOpen, showSuccessMessage 
   const initialData: FormDataType = Object.fromEntries(
     languages.map((lang) => [
       lang.language_code,
-      { lang_code: lang.language_code, icon: '', content: { name: '', description: '' } }
+      { lang_code: lang.language_code, image: '', content: { title: '', description: '' } }
     ])
   );
   const [formData, setFormData] = useState<FormDataType>(initialData);
 
   // Состояние для изображения категории
-  const [editBrandImage, setEditBrandImage] = useState<File | null>(null);
+  const [editCategoryImage, setEditCategoryImage] = useState<File | null>(null);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
 
   // Состояние для отображения загрузки
@@ -75,27 +72,27 @@ const EditCategoryInfo = ({ brand, languages, open, setOpen, showSuccessMessage 
   const [selectedLang, setSelectedLang] = useState<string>('ru');
 
   useEffect(() => {
-    if (brand && brand.icon) {
-      setPreviewImage(brand.icon);
+    if (category && category.image) {
+      setPreviewImage(category.image);
     }
-  }, [brand]);
+  }, [category]);
 
   useEffect(() => {
-    if (brand) {
+    if (category) {
       const newData: FormDataType = { ...initialData };
 
       const updateDataForLanguage = (langCode: string) => {
-        const langData = brand.translate_content.find((content) => content.lang_code === langCode) || {
-          content: { name: '', description: '' },
+        const langData = category.translate_content.find((content) => content.lang_code === langCode) || {
+          content: { title: '', description: '' },
         };
 
         newData[langCode] = {
           lang_code: langCode,
           content: {
-            name: langData.content.name,
+            title: langData.content.title,
             description: langData.content.description,
           },
-          icon: brand.icon || '',
+          image: category.image || '',
         };
       };
 
@@ -107,14 +104,14 @@ const EditCategoryInfo = ({ brand, languages, open, setOpen, showSuccessMessage 
     } else {
       setFormData(initialData);
     }
-  }, [brand, open, languages]);
+  }, [category, open, languages]);
 
   const currentData = formData[selectedLang] || { title: '', description: '' };
 
   const handleEditImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files && event.target.files[0];
     if (file) {
-      setEditBrandImage(file);
+      setEditCategoryImage(file);
       setPreviewImage(URL.createObjectURL(file));
     }
   };
@@ -123,51 +120,58 @@ const EditCategoryInfo = ({ brand, languages, open, setOpen, showSuccessMessage 
     event.preventDefault();
 
     const currentLangData = formData[selectedLang];
-    if (!currentLangData.content.name && !currentLangData.content.description) {
+
+    // Проверяем, что хотя бы одно из полей не пустое
+    if (!currentLangData.content.title && !currentLangData.content.description) {
       setShowEmptyFieldsMessage(true);
 
       return;
     }
 
-    // Добавляем проверку токена
-    try {
-      const isTokenValid = await checkAndRefreshToken();
-      if (!isTokenValid) {
-        alert('Токен недействителен. Пожалуйста, войдите снова.');
-        setLoading(false);
-
-        return;
-      }
-    } catch (tokenError) {
-      console.error('Ошибка проверки токена:', tokenError);
-      alert('Произошла ошибка при проверке токена. Пожалуйста, попробуйте еще раз.');
-      setLoading(false);
-
-      return;
-    }
-
     // Формируем данные для отправки
-    const dataToSend = { translate_content: [] };
+    const dataToSend = {
+      translate_content: []
+    };
+
     Object.entries(formData).forEach(([langCode, langData]) => {
-      if (langData.content.name.trim().length > 0 || langData.content.description.trim().length > 0) {
+      if (langData.content.title.trim().length > 0 || langData.content.description.trim().length > 0) {
         // @ts-ignore
         dataToSend.translate_content.push({ lang_code: langCode, content: langData.content });
       }
     });
 
     setLoading(true);
+    let fileUploadSuccess = false;
     let createdSuccess = false;
 
     try {
-      await axiosClassic.post('/brand-admin', dataToSend);
-      setFormData(initialData);
+      // Передаем ID категории в URL
+      const categoryId = category?.id;
+      await axiosClassic.patch(`/category-admin?category_id=${categoryId}`, dataToSend);
       createdSuccess = true;
-      showSuccessMessage(t("successCreated"));
+
+      // Проверка расширения файла
+      const fileExtension = editCategoryImage?.name.split('.').pop()?.toLowerCase();
+      if (editCategoryImage && (!fileExtension || !['jpg', 'jpeg', 'png', 'gif'].includes(fileExtension))) {
+        throw new Error(t('errorFile'));
+      }
+
+      // Загрузка файла, если editCategoryImage не равен null или undefined
+      const formDataFile = new FormData();
+      if (editCategoryImage) {
+        formDataFile.append('image', editCategoryImage, editCategoryImage.name);
+        await axiosClassic.patch(`/category-admin/add-file?id=${categoryId}`, formDataFile, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        });
+        fileUploadSuccess = true;
+      }
     } catch (error) {
       console.error(t('errorUpdate'), error);
     } finally {
       setLoading(false);
-      if (createdSuccess) {
+      if (fileUploadSuccess || createdSuccess) {
         showSuccessMessage(t("successUpdate"));
         setSubmitSuccess(true);
         router.push(router.asPath);
@@ -214,7 +218,7 @@ const EditCategoryInfo = ({ brand, languages, open, setOpen, showSuccessMessage 
               <TextField
                 label={t("title")}
                 fullWidth
-                value={currentData?.content?.name || ''}
+                value={currentData?.content?.title || ''}
                 onChange={(event) =>
                   setFormData((prev) => {
                     const selectedLangData = prev[selectedLang] || {content: {title: '', description: ''}};

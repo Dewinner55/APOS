@@ -1,4 +1,7 @@
 {
+  "landing": {
+    "OurLatest": "Our latest"
+  },
   "dashboard": {
     "totalProfit": "Toplam Kar",
     "weeklyProfit": "Haftalık Kar",

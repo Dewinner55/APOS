@@ -23,69 +23,62 @@ import TextField from "@mui/material/TextField";
 import {DialogContentText, Grid} from "@mui/material";
 
 // Types Imports
-import {FormDataType} from "src/@core/types/category/types";
+import {FormDataType} from "src/@core/types/brands/types";
 
 // Interface Imports
-import {Category} from "src/@core/interface/category/interface";
 import {Language} from "src/@core/interface/language/interface";
 import LinearProgress from "@mui/material/LinearProgress";
 import TableFilters from "src/views/category/list/filter/TableFilters";
 import {useTranslations} from "next-intl";
+import {Brands} from "src/@core/interface/brands/interface";
 
 type Props = {
-  category: Category;
+  brand: Brands;
   languages: Language[];
-  open: boolean
-  setOpen: (open: boolean) => void
+  open: boolean;
+  setOpen: (open: boolean) => void;
   showSuccessMessage: (message: string) => void;
 }
 
-const ConfirmationDialog = ({category, languages, open, setOpen, showSuccessMessage}: Props) => {
+const ConfirmationDialog = ({brand, languages, open, setOpen, showSuccessMessage}: Props) => {
   const t = useTranslations('categoryList');
   const router = useRouter();
 
-  // Состояние для данных формы
   const initialData: FormDataType = Object.fromEntries(
     languages.map((lang) => [
       lang.language_code,
-      {lang_code: lang.language_code, image: '', content: {title: '', description: ''}}
+      { lang_code: lang.language_code, icon: '', content: { name: '', description: '' } }
     ])
   );
   const [formData, setFormData] = useState<FormDataType>(initialData);
-
-  // Состояние для изображения категории
-  const [, setEditCategoryImage] = useState<File | null>(null);
+  const [, setEditBrandImage] = useState<File | null>(null);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
-
-  // Состояния для отображения загрузки и сообщения о пустых полях
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [loading, setLoading] = useState<boolean>(false);
-
-  // Состояние для выбранного языка
   const [selectedLang, setSelectedLang] = useState<string>('ru');
 
   useEffect(() => {
-    if (category && category.image) {
-      setPreviewImage(category.image);
+    if (brand && brand.icon) {
+      setPreviewImage(brand.icon);
     }
-  }, [category]);
+  }, [brand]);
 
   useEffect(() => {
-    if (category) {
-      const newData: FormDataType = {...initialData};
+    if (brand) {
+      const newData: FormDataType = { ...initialData };
 
       const updateDataForLanguage = (langCode: string) => {
-        const langData = category.translate_content?.find((content) => content.lang_code === langCode) || {
-          content: {title: t("noDataAvailable"), description: t("noDataAvailable")},
+        const langData = brand.translate_content?.find((content) => content.lang_code === langCode) || {
+          content: { name: t("noDataAvailable"), description: t("noDataAvailable") },
         };
 
         newData[langCode] = {
           lang_code: langCode,
           content: {
-            title: langData.content.title,
+            name: langData.content.name,
             description: langData.content.description,
           },
-          image: category.image || '',
+          icon: brand.icon || '',
         };
       };
 
@@ -97,34 +90,32 @@ const ConfirmationDialog = ({category, languages, open, setOpen, showSuccessMess
     } else {
       setFormData(initialData);
     }
-  }, [category, open, languages]);
+  }, [brand, open, languages]);
 
-  const currentData = formData[selectedLang] || {title: '', description: ''};
+  const currentData = formData[selectedLang] || { name: '', description: '' };
 
   const handleDeleteImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files && event.target.files[0];
     if (file) {
-      setEditCategoryImage(file);
+      setEditBrandImage(file);
       setPreviewImage(URL.createObjectURL(file));
     }
   };
 
   const handleDeleteSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
+    event.preventDefault();
 
     const currentLangData = formData[selectedLang];
 
     setLoading(true);
 
     try {
-      // Передаем ID категории в URL
-      const categoryId = category?.id;
-      const imageId = category?.image;
+      const brandId = brand?.id;
+      const imageId = brand?.icon;
 
-      // Удаляем изображение и категорию одним запросом
       await Promise.all([
-        axiosClassic.delete(`/category-admin/delete-file?id=${categoryId}&file_path=${imageId}`),
-        axiosClassic.delete(`/category-admin?category_id=${categoryId}`, {
+        axiosClassic.delete(`/brand-admin/delete-file?id=${brandId}&file_path=${imageId}`),
+        axiosClassic.delete(`/brand-admin?brand_id=${brandId}`, {
           data: {
             translate_content: [
               {
@@ -152,28 +143,28 @@ const ConfirmationDialog = ({category, languages, open, setOpen, showSuccessMess
     setSubmitSuccess(false);
   };
 
-  const handleCategoryList = () => {
-    router.push(`/category/list`);
+  const handleBrandList = () => {
+    router.push(`/brand/list`);
   };
+
+  const currentBrandData = brand.translate_content.find((content) => content.lang_code === 'en')?.content || { name: '', description: '' };
+
 
   return (
     <Dialog fullWidth open={open} onClose={handleReset} maxWidth='md' scroll='body'>
-      <DialogTitle
-        variant='h4'
-        className='flex gap-2 flex-col text-center pbs-10 pbe-6 pli-10 sm:pbs-16 sm:pbe-6 sm:pli-16'
-      >
-        {t("deleteCategory")}
-        <Box sx={{mt: 2}}>
+      <DialogTitle variant='h4' className='flex gap-2 flex-col text-center pbs-10 pbe-6 pli-10 sm:pbs-16 sm:pbe-6 sm:pli-16'>
+        {currentBrandData.name}
+        <Box sx={{ mt: 2 }}>
           <Typography component='span' className='flex flex-col text-center'>
-            {t("informationDelete")}
+            {currentBrandData.description}
           </Typography>
         </Box>
         <IconButton
           onClick={handleReset}
           className='absolute block-start-4 inline-end-4'
-          style={{position: 'absolute', top: 10, right: 10}}
+          style={{ position: 'absolute', top: 10, right: 10 }}
         >
-          <i className='ri-close-line text-textSecondary'/>
+          <i className='ri-close-line text-textSecondary' />
         </IconButton>
       </DialogTitle>
       {loading && <LinearProgress />}
@@ -187,15 +178,15 @@ const ConfirmationDialog = ({category, languages, open, setOpen, showSuccessMess
                 languages={languages}
               />
               <TextField
-                label={t("title")}
+                label={t("name")}
                 fullWidth
-                value={currentData?.content?.title || ''}
+                value={currentData?.content?.name || ''}
                 InputProps={{
-                  style: { pointerEvents: 'none' } // не позволяет кликать на поле
+                  style: { pointerEvents: 'none' }
                 }}
                 onChange={(event) =>
                   setFormData((prev) => {
-                    const selectedLangData = prev[selectedLang] || {content: {title: '', description: ''}};
+                    const selectedLangData = prev[selectedLang] || {content: {name: '', description: ''}};
 
                     return {
                       ...prev,
@@ -203,7 +194,7 @@ const ConfirmationDialog = ({category, languages, open, setOpen, showSuccessMess
                         ...selectedLangData,
                         content: {
                           ...selectedLangData.content,
-                          title: event.target.value,
+                          name: event.target.value,
                         },
                       },
                     };
@@ -217,12 +208,12 @@ const ConfirmationDialog = ({category, languages, open, setOpen, showSuccessMess
                 multiline
                 rows={3}
                 InputProps={{
-                  style: { pointerEvents: 'none' } // не позволяет кликать на поле
+                  style: { pointerEvents: 'none' }
                 }}
                 value={currentData?.content?.description || ''}
                 onChange={(event) =>
                   setFormData((prev) => {
-                    const selectedLangData = prev[selectedLang] || {content: {title: '', description: ''}};
+                    const selectedLangData = prev[selectedLang] || {content: {name: '', description: ''}};
 
                     return {
                       ...prev,
@@ -239,17 +230,17 @@ const ConfirmationDialog = ({category, languages, open, setOpen, showSuccessMess
                 sx={{marginBottom: 6, overflowWrap: 'break-word'}} // Или используйте wordWrap: 'break-word'
               />
             </Grid>
-            <Grid item xs={12} sm={6} style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+            <Grid item xs={12} sm={6} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
               <FormControl fullWidth>
                 <input
                   type='file'
                   id='image-upload-edit'
                   accept='image/*'
                   onChange={handleDeleteImageChange}
-                  style={{display: 'none'}}
+                  style={{ display: 'none' }}
                   disabled={true}
                 />
-                <label htmlFor='image-upload-edit' style={{width: '100%', textAlign: 'center'}}>
+                <label htmlFor='image-upload-edit' style={{ width: '100%', textAlign: 'center' }}>
                   <Button
                     component='span'
                     variant='outlined'
@@ -299,7 +290,7 @@ const ConfirmationDialog = ({category, languages, open, setOpen, showSuccessMess
           </Button>
         </DialogActions>
       </form>
-      <Dialog open={submitSuccess} onClick={handleCategoryList}>
+      <Dialog open={submitSuccess} onClick={handleBrandList}>
         <DialogTitle>{t("successfully")}</DialogTitle>
         <DialogContent>
           <DialogContentText>{t("successDelete")}</DialogContentText>
@@ -314,4 +305,4 @@ const ConfirmationDialog = ({category, languages, open, setOpen, showSuccessMess
   )
 }
 
-export default ConfirmationDialog
+export default ConfirmationDialog;

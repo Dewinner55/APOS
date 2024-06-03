@@ -7,8 +7,11 @@ import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
+import {useTranslations} from "next-intl";
 
 export default function Hero() {
+  const t = useTranslations('landing');
+
   return (
     <Box
       id="hero"

@@ -25,8 +25,12 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   console.log('theme', initialTheme);
 
+  // Предположим, что сообщения загружаются асинхронно для локализации
+  const messages = await import(`../messages/${context.locale}.json`);
+
   return {
     props: {
+      messages: messages.landing,
       initialTheme,
     },
   };

@@ -1,4 +1,7 @@
 {
+  "landing": {
+    "OurLatest": "Our latest"
+  },
   "dashboard": {
     "totalProfit": "Total Profit",
     "weeklyProfit": "Weekly Profit",
