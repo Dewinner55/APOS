@@ -11,6 +11,7 @@ import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
+import {useTranslations} from "next-intl";
 
 const tiers = [
   {
@@ -59,6 +60,7 @@ interface PricingProps {
 }
 
 export default function Pricing({ id }: PricingProps) {
+  const t = useTranslations();
   return (
     <Container
       id="pricing"
@@ -79,11 +81,11 @@ export default function Pricing({ id }: PricingProps) {
         }}
       >
         <Typography component="h2" variant="h4" color="text.primary">
-          Цены
+          {t("Prices")}
         </Typography>
         <Typography variant="body1" color="text.secondary">
-          Лучшие цены. <br />
-          Можно договориться.
+          {t("ThePrices")} <br />
+          {t("WeAgree")}
         </Typography>
       </Box>
       <Grid container spacing={3} alignItems="center" justifyContent="center">

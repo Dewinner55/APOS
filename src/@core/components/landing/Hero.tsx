@@ -10,7 +10,7 @@ import Typography from '@mui/material/Typography';
 import {useTranslations} from "next-intl";
 
 export default function Hero() {
-  const t = useTranslations('landing');
+  const t = useTranslations();
 
   return (
     <Box
@@ -45,7 +45,7 @@ export default function Hero() {
               fontSize: 'clamp(3.5rem, 10vw, 4rem)',
             }}
           >
-            Наши последние&nbsp;
+            {t('OurLatest')}&nbsp;
             <Typography
               component="span"
               variant="h1"
@@ -55,7 +55,7 @@ export default function Hero() {
                   theme.palette.mode === 'light' ? 'primary.main' : 'primary.light',
               }}
             >
-              Products
+              {t('Products')}
             </Typography>
           </Typography>
           <Typography
@@ -63,7 +63,7 @@ export default function Hero() {
             color="text.secondary"
             sx={{ alignSelf: 'center', width: { sm: '100%', md: '80%' } }}
           >
-            Исследуйте наш передовой дашборд, предлагающий высококачественные решения, адаптированные под ваши потребности
+            {t('Explore')}
           </Typography>
           <Stack
             direction={{ xs: 'column', sm: 'row' }}
@@ -85,13 +85,13 @@ export default function Hero() {
               }}
             />
             <Button variant="contained" color="primary">
-              Отправить сообщение
+              {t('sendMessage')}
             </Button>
           </Stack>
           <Typography variant="caption" textAlign="center" sx={{ opacity: 0.8 }}>
-            Нажав на кнопку &quot;Отправить сообщение&quot; вы соглашаетесь с нашими&nbsp;
+            {t("ByClick")}&quot;{t("sendMessage")}&quot;{t("Agree")}&nbsp;
             <Link href="#" color="primary">
-              Условия использования
+              {t("Terms")}
             </Link>
             .
           </Typography>
@@ -118,7 +118,7 @@ export default function Hero() {
               theme.palette.mode === 'light'
                 ? `0 0 12px 8px ${alpha('#9CCCFC', 0.2)}`
                 : `0 0 24px 12px ${alpha('#033363', 0.2)}`,
-            position: 'relative', // добавляем позиционирование
+            position: 'relative',
           })}
         >
         </Box>

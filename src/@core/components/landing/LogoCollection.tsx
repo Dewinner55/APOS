@@ -3,6 +3,7 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import { useTheme } from '@mui/system';
+import {useTranslations} from "next-intl";
 
 const whiteLogos = [
   'https://assets-global.website-files.com/61ed56ae9da9fd7e0ef0a967/6560628e8573c43893fe0ace_Sydney-white.svg',
@@ -30,6 +31,7 @@ const logoStyle = {
 };
 
 export default function LogoCollection() {
+  const t = useTranslations();
   const theme = useTheme();
   const logos = theme.palette.mode === 'light' ? darkLogos : whiteLogos;
 
@@ -41,7 +43,7 @@ export default function LogoCollection() {
         align="center"
         color="text.secondary"
       >
-        Trusted by the best companies
+        {t('Trusted')}
       </Typography>
       <Grid container justifyContent="center" sx={{ mt: 0.5, opacity: 0.6 }}>
         {logos.map((logo, index) => (

@@ -11,6 +11,7 @@ import QueryStatsRoundedIcon from '@mui/icons-material/QueryStatsRounded';
 import SettingsSuggestRoundedIcon from '@mui/icons-material/SettingsSuggestRounded';
 import SupportAgentRoundedIcon from '@mui/icons-material/SupportAgentRounded';
 import ThumbUpAltRoundedIcon from '@mui/icons-material/ThumbUpAltRounded';
+import {useTranslations} from "next-intl";
 
 const items = [
   {
@@ -56,6 +57,8 @@ interface HighlightsProps {
 }
 
 export default function Highlights({ id }: HighlightsProps) {
+  const t = useTranslations();
+
   return (
     <Box
       id="highlights"
@@ -82,12 +85,10 @@ export default function Highlights({ id }: HighlightsProps) {
           }}
         >
           <Typography component="h2" variant="h4">
-            Основные моменты
+            {t("BasicMoments")}
           </Typography>
           <Typography variant="body1" sx={{ color: 'grey.400' }}>
-            Узнайте, почему наш продукт выделяется: адаптируемость, долговечность,
-            удобный дизайн и инновации. Наслаждайтесь надежной поддержкой клиентов и
-            точность в каждой детали.
+            {t('FindProduct')}
           </Typography>
         </Box>
         <Grid container spacing={2.5}>

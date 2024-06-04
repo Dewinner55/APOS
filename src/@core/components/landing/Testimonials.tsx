@@ -8,6 +8,7 @@ import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
 import { useTheme } from '@mui/system';
+import {useTranslations} from "next-intl";
 
 const userTestimonials = [
   {
@@ -82,6 +83,8 @@ interface TestimonialsProps {
 }
 
 export default function Testimonials({ id }: TestimonialsProps) {
+  const t = useTranslations();
+
   const theme = useTheme();
   const logos = theme.palette.mode === 'light' ? darkLogos : whiteLogos;
 
@@ -105,12 +108,10 @@ export default function Testimonials({ id }: TestimonialsProps) {
         }}
       >
         <Typography component="h2" variant="h4" color="text.primary">
-          Отзывы
+          {t('Reviews')}
         </Typography>
         <Typography variant="body1" color="text.secondary">
-          Посмотрите, что нашим клиентам нравится в нашей продукции. Узнайте, как мы преуспеваем в
-          эффективность, долговечность и удовлетворение. Присоединяйтесь к нам за качество, инновации,
-          и надежная поддержка.
+          {t("Customers")}
         </Typography>
       </Box>
       <Grid container spacing={2}>

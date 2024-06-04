@@ -15,6 +15,9 @@ import { useRouter } from 'next/router';
 import ScrollToTop from "src/@core/components/scroll-to-top";
 import Fab from "@mui/material/Fab";
 import ArrowUp from "mdi-material-ui/ArrowUp";
+import {useTranslations} from "next-intl";
+import LanguageDropdown from "src/@core/layouts/components/shared-components/LanguageDropdown";
+import LanguageLending from "src/@core/components/landing/LanguageLending";
 
 interface AppAppBarProps {
   mode: PaletteMode;
@@ -23,6 +26,8 @@ interface AppAppBarProps {
 }
 
 function AppAppBar({ mode, toggleColorMode, includeHomePageLink = false }: AppAppBarProps) {
+  const t = useTranslations();
+
   const router = useRouter(); // Инициализация useRouter
 
   const [open, setOpen] = React.useState(false);
@@ -107,7 +112,7 @@ function AppAppBar({ mode, toggleColorMode, includeHomePageLink = false }: AppAp
                   sx={{ py: '6px', px: '12px' }}
                 >
                   <Typography variant="body2" color="text.primary">
-                    Функции
+                    {t('Functions')}
                   </Typography>
                 </MenuItem>
                 {/* Пункт меню "Отзывы" */}
@@ -122,7 +127,7 @@ function AppAppBar({ mode, toggleColorMode, includeHomePageLink = false }: AppAp
                   sx={{ py: '6px', px: '12px' }}
                 >
                   <Typography variant="body2" color="text.primary">
-                    Отзывы
+                    {t("Reviews")}
                   </Typography>
                 </MenuItem>
                 {/* Пункт меню "Моменты" */}
@@ -137,7 +142,7 @@ function AppAppBar({ mode, toggleColorMode, includeHomePageLink = false }: AppAp
                   sx={{ py: '6px', px: '12px' }}
                 >
                   <Typography variant="body2" color="text.primary">
-                    Моменты
+                    {t("BasicMoments")}
                   </Typography>
                 </MenuItem>
                 {/* Пункт меню "Цена" */}
@@ -152,7 +157,7 @@ function AppAppBar({ mode, toggleColorMode, includeHomePageLink = false }: AppAp
                   sx={{ py: '6px', px: '12px' }}
                 >
                   <Typography variant="body2" color="text.primary">
-                    Цена
+                    {t("Prices")}
                   </Typography>
                 </MenuItem>
                 {/* Пункт меню "FAQ" */}
@@ -167,7 +172,7 @@ function AppAppBar({ mode, toggleColorMode, includeHomePageLink = false }: AppAp
                   sx={{ py: '6px', px: '12px' }}
                 >
                   <Typography variant="body2" color="text.primary">
-                    FAQ
+                    {t("FAQ")}
                   </Typography>
                 </MenuItem>
               </Box>
@@ -179,6 +184,7 @@ function AppAppBar({ mode, toggleColorMode, includeHomePageLink = false }: AppAp
                 alignItems: 'center',
               }}
             >
+              <LanguageLending />
               <ToggleColorMode mode={mode} toggleColorMode={toggleColorMode}/>
               <Button
                 color="primary"

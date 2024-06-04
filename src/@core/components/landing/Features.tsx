@@ -12,39 +12,40 @@ import ChevronRightRoundedIcon from '@mui/icons-material/ChevronRightRounded';
 import DevicesRoundedIcon from '@mui/icons-material/DevicesRounded';
 import EdgesensorHighRoundedIcon from '@mui/icons-material/EdgesensorHighRounded';
 import ViewQuiltRoundedIcon from '@mui/icons-material/ViewQuiltRounded';
-
-const items = [
-  {
-    icon: <ViewQuiltRoundedIcon />,
-    title: 'Панель Администратора',
-    description:
-      'Этот элемент может предоставить снимок наиболее важных показателей или точек данных, связанных с продуктом.',
-    imageLight: 'url("/images/landing/maple-7584635_640.png")',
-    imageDark: 'url("/images/landing/maple-7584635_640.png")',
-  },
-  {
-    icon: <EdgesensorHighRoundedIcon />,
-    title: 'Мобильная интеграция',
-    description:
-      'Этот элемент может предоставлять информацию о версии продукта для мобильного приложения.',
-    imageLight: 'url("/images/landing/smartphone-1184883_1280.png")',
-    imageDark: 'url("/images/landing/smartphone-1184883_1280.png")',
-  },
-  {
-    icon: <DevicesRoundedIcon />,
-    title: 'Доступно на всех платформах',
-    description:
-      'Этот элемент может сообщить пользователям, что продукт доступен на всех платформах, таких как Интернет, мобильные устройства и компьютеры.',
-    imageLight: 'url("/images/landing/transparent-1911160_640.png")',
-    imageDark: 'url("/images/landing/transparent-1911160_640.png")',
-  },
-];
+import {useTranslations} from "next-intl";
 
 interface FeaturesProps {
   id: string;
 }
 
 export default function Features({ id }: FeaturesProps) {
+  const t = useTranslations();
+
+  const items = [
+    {
+      icon: <ViewQuiltRoundedIcon />,
+      title: t('AdminPanel'),
+      description: t('AdminPanelDescription'),
+      imageLight: 'url("/images/landing/maple-7584635_640.png")',
+      imageDark: 'url("/images/landing/maple-7584635_640.png")',
+    },
+    {
+      icon: <EdgesensorHighRoundedIcon />,
+      title: t('MobileIntegration'),
+      description: t('MobileIntegrationDescription'),
+      imageLight: 'url("/images/landing/smartphone-1184883_1280.png")',
+      imageDark: 'url("/images/landing/smartphone-1184883_1280.png")',
+    },
+    {
+      icon: <DevicesRoundedIcon />,
+      title: t('AvailableOnAllPlatforms'),
+      description: t('AvailableOnAllPlatformsDescription'),
+      imageLight: 'url("/images/landing/transparent-1911160_640.png")',
+      imageDark: 'url("/images/landing/transparent-1911160_640.png")',
+    },
+  ];
+
+
   const [selectedItemIndex, setSelectedItemIndex] = React.useState(0);
 
   const handleItemClick = (index: number) => {
@@ -59,16 +60,14 @@ export default function Features({ id }: FeaturesProps) {
         <Grid item xs={12} md={6}>
           <div>
             <Typography component="h2" variant="h4" color="text.primary">
-              Особенности продукта
+              {t('ProductFeatures')}
             </Typography>
             <Typography
               variant="body1"
               color="text.secondary"
               sx={{ mb: { xs: 2, sm: 4 } }}
             >
-              Здесь вы можете предоставить краткий обзор основных особенностей
-              продукт. Например, вы можете указать количество функций, типы
-              функций, дополнений или преимуществ функций.
+              {t('Here')}
             </Typography>
           </div>
           <Grid container item gap={1} sx={{ display: { xs: 'auto', sm: 'none' } }}>
@@ -138,7 +137,7 @@ export default function Features({ id }: FeaturesProps) {
                   '&:hover > svg': { transform: 'translateX(2px)' },
                 }}
               >
-                <span>Learn more</span>
+                <span>{t('LearnMore')}</span>
                 <ChevronRightRoundedIcon
                   fontSize="small"
                   sx={{ mt: '1px', ml: '2px' }}
@@ -234,7 +233,7 @@ export default function Features({ id }: FeaturesProps) {
                         event.stopPropagation();
                       }}
                     >
-                      <span>Learn more</span>
+                      <span>{t('LearnMore')}</span>
                       <ChevronRightRoundedIcon
                         fontSize="small"
                         sx={{ mt: '1px', ml: '2px' }}

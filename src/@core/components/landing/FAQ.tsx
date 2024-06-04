@@ -8,12 +8,15 @@ import Link from '@mui/material/Link';
 import Typography from '@mui/material/Typography';
 
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import {useTranslations} from "next-intl";
 
 interface FAQProps {
   id: string;
 }
 
 export default function FAQ({ id }: FAQProps) {
+  const t = useTranslations();
+
   const [expanded, setExpanded] = React.useState<string | false>(false);
 
   const handleChange =
@@ -43,7 +46,7 @@ export default function FAQ({ id }: FAQProps) {
           textAlign: { sm: 'left', md: 'center' },
         }}
       >
-        Часто задаваемые вопросы
+        {t("FAQ")}
       </Typography>
       <Box sx={{ width: '100%' }}>
         <Accordion
@@ -56,7 +59,7 @@ export default function FAQ({ id }: FAQProps) {
             id="panel1d-header"
           >
             <Typography component="h3" variant="subtitle2">
-              Как мне связаться со службой поддержки, если у меня есть вопрос или проблема?
+              {t("ContactSupport")}
             </Typography>
           </AccordionSummary>
           <AccordionDetails>
@@ -65,10 +68,9 @@ export default function FAQ({ id }: FAQProps) {
               gutterBottom
               sx={{ maxWidth: { sm: '100%', md: '70%' } }}
             >
-              Вы можете связаться с нашей службой поддержки клиентов по электронной почте
+              {t("ServiceEmail")}
               <Link> support@email.com </Link>
-              или позвонив по нашему бесплатному номеру. Мы&apos;здесь, чтобы помочь вам
-              незамедлительно.
+              {t("Calling")}
             </Typography>
           </AccordionDetails>
         </Accordion>
@@ -82,7 +84,7 @@ export default function FAQ({ id }: FAQProps) {
             id="panel2d-header"
           >
             <Typography component="h3" variant="subtitle2">
-              Могу ли я вернуть товар, если это не так&apos;не оправдаю моих ожиданий?
+              {t("ReturnProduct")}
             </Typography>
           </AccordionSummary>
           <AccordionDetails>
@@ -91,9 +93,7 @@ export default function FAQ({ id }: FAQProps) {
               gutterBottom
               sx={{ maxWidth: { sm: '100%', md: '70%' } }}
             >
-              Абсолютно! Мы предлагаем беспроблемную политику возврата. Если вы&apos;ты не
-              полностью удовлетворен, вы можете вернуть товар в течение [количества
-              дни] дней для полного возврата или обмена.
+              {t("Offer")}
             </Typography>
           </AccordionDetails>
         </Accordion>
@@ -107,7 +107,7 @@ export default function FAQ({ id }: FAQProps) {
             id="panel3d-header"
           >
             <Typography component="h3" variant="subtitle2">
-              Что отличает ваш продукт от других на рынке?
+              {t("WhatMakes")}
             </Typography>
           </AccordionSummary>
           <AccordionDetails>
@@ -116,9 +116,7 @@ export default function FAQ({ id }: FAQProps) {
               gutterBottom
               sx={{ maxWidth: { sm: '100%', md: '70%' } }}
             >
-              Наш продукт отличается своей адаптируемостью, долговечностью,
-              и инновационные функции. Мы уделяем приоритетное внимание удовлетворению пользователей и
-              постоянно стремиться превзойти ожидания во всех аспектах.
+              {t("OurProduct")}
             </Typography>
           </AccordionDetails>
         </Accordion>
@@ -132,7 +130,7 @@ export default function FAQ({ id }: FAQProps) {
             id="panel4d-header"
           >
             <Typography component="h3" variant="subtitle2">
-              Есть ли гарантия на товар и на что она распространяется?
+              {t("Warranty")}
             </Typography>
           </AccordionSummary>
           <AccordionDetails>
@@ -141,10 +139,7 @@ export default function FAQ({ id }: FAQProps) {
               gutterBottom
               sx={{ maxWidth: { sm: '100%', md: '70%' } }}
             >
-              Да, на наш продукт распространяется гарантия [срок гарантии]. Это охватывает
-              дефекты материалов и изготовления. Если у вас возникнут какие-либо проблемы
-              на который распространяется гарантия, пожалуйста, свяжитесь с нашей службой поддержки клиентов для
-              помощь.
+              {t("ProductCovered")}
             </Typography>
           </AccordionDetails>
         </Accordion>

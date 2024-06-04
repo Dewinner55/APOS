@@ -13,6 +13,7 @@ import LinkedInIcon from '@mui/icons-material/LinkedIn';
 import TwitterIcon from '@mui/icons-material/X';
 import MenuItem from "@mui/material/MenuItem";
 import { useRouter } from 'next/router';
+import {useTranslations} from "next-intl";
 
 const logoStyle = {
   width: '140px',
@@ -34,6 +35,8 @@ interface FooterProps {
 }
 
 export default function ({ includeHomePageLink = false }: FooterProps) {
+  const t = useTranslations();
+
   const router = useRouter();
 
 
@@ -89,7 +92,7 @@ export default function ({ includeHomePageLink = false }: FooterProps) {
               Global Joy Lab
             </Typography>
             <Typography variant="body2" color="text.secondary" mb={2}>
-              Subscribe to our newsletter for weekly updates and promotions.
+              {t('Subscribe')}
             </Typography>
             <Stack direction="row" spacing={1} useFlexGap>
               <TextField
@@ -106,7 +109,7 @@ export default function ({ includeHomePageLink = false }: FooterProps) {
                 }}
               />
               <Button variant="contained" color="primary" sx={{ flexShrink: 0 }}>
-                Subscribe
+                {t("Subscribes")}
               </Button>
             </Stack>
           </Box>
@@ -119,7 +122,7 @@ export default function ({ includeHomePageLink = false }: FooterProps) {
           }}
         >
           <Typography variant="body2" fontWeight={600} sx={{ marginLeft: '14px' }}>
-            Продукт
+            {t('Products')}
           </Typography>
           <MenuItem
             onClick={() => {
@@ -140,7 +143,7 @@ export default function ({ includeHomePageLink = false }: FooterProps) {
             }}
           >
             <Typography variant="body2" color="text.secondary">
-              Основные функции
+              {t("Functions")}
             </Typography>
           </MenuItem>
           <MenuItem
@@ -162,7 +165,7 @@ export default function ({ includeHomePageLink = false }: FooterProps) {
             }}
           >
             <Typography variant="body2" color="text.secondary">
-              Отзывы наших клиентов
+              {t("Reviews")}
             </Typography>
           </MenuItem>
           <MenuItem
@@ -184,7 +187,7 @@ export default function ({ includeHomePageLink = false }: FooterProps) {
             }}
           >
             <Typography variant="body2" color="text.secondary">
-              Основные моменты
+              {t("BasicMoments")}
             </Typography>
           </MenuItem>
           <MenuItem
@@ -206,7 +209,7 @@ export default function ({ includeHomePageLink = false }: FooterProps) {
             }}
           >
             <Typography variant="body2" color="text.secondary">
-              Стоимость
+              {t('Prices')}
             </Typography>
           </MenuItem>
           <MenuItem
@@ -228,7 +231,7 @@ export default function ({ includeHomePageLink = false }: FooterProps) {
             }}
           >
             <Typography variant="body2" color="text.secondary">
-              FAQ
+              {t("FAQ")}
             </Typography>
           </MenuItem>
         </Box>
@@ -240,7 +243,7 @@ export default function ({ includeHomePageLink = false }: FooterProps) {
           }}
         >
           <Typography variant="body2" fontWeight={600}>
-            Company
+            {t("Company")}
           </Typography>
           <MenuItem
             onClick={() => {
@@ -257,7 +260,25 @@ export default function ({ includeHomePageLink = false }: FooterProps) {
             }}
           >
             <Typography variant="body2" color="text.secondary">
-              О нас
+              {t('Blog')}
+            </Typography>
+          </MenuItem>
+          <MenuItem
+            onClick={() => {
+              router.push('/aboutUs');
+            }}
+            sx={{
+              py: '6px',
+              px: '12px',
+              "&:hover": {
+                '& > *': {
+                  color: 'text.primary'
+                }
+              }
+            }}
+          >
+            <Typography variant="body2" color="text.secondary">
+              {t('AboutUs')}
             </Typography>
           </MenuItem>
         </Box>
@@ -269,7 +290,7 @@ export default function ({ includeHomePageLink = false }: FooterProps) {
           }}
         >
           <Typography variant="body2" fontWeight={600}>
-            Юридический права
+            {t('Legal')}
           </Typography>
           <MenuItem
             onClick={() => {
@@ -286,7 +307,7 @@ export default function ({ includeHomePageLink = false }: FooterProps) {
             }}
           >
             <Typography variant="body2" color="text.secondary">
-              Условия
+              {t("Conditions")}
             </Typography>
           </MenuItem>
           <MenuItem
@@ -304,7 +325,7 @@ export default function ({ includeHomePageLink = false }: FooterProps) {
             }}
           >
             <Typography variant="body2" color="text.secondary">
-              Конфиденциальность
+              {t("Confidentiality")}
             </Typography>
           </MenuItem>
           <MenuItem
@@ -322,7 +343,7 @@ export default function ({ includeHomePageLink = false }: FooterProps) {
             }}
           >
             <Typography variant="body2" color="text.secondary">
-              Контакты
+              {t('Contacts')}
             </Typography>
           </MenuItem>
         </Box>
@@ -339,13 +360,13 @@ export default function ({ includeHomePageLink = false }: FooterProps) {
       >
         <div>
           <Link color="text.secondary" href="#">
-            Privacy Policy
+            {t("Privacy")}
           </Link>
           <Typography display="inline" sx={{ mx: 0.5, opacity: 0.5 }}>
             &nbsp;•&nbsp;
           </Typography>
           <Link color="text.secondary" href="#">
-            Terms of Service
+            {t("TermsOfService")}
           </Link>
           <Copyright />
         </div>
