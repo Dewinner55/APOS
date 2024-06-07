@@ -1,31 +1,21 @@
-// ** Next Import
-import {NextPage} from "next";
+import { NextPage } from "next";
+import dynamic from 'next/dynamic';
+import Grid from '@mui/material/Grid';
+import ApexChartWrapper from '../../@core/styles/libs/react-apexcharts';
+import { withAuth } from "../../@core/SSR/lib/auth";
+import { DimensionsProvider } from "src/@core/context/DimensionsContext";
+import AverageOrderValue from "src/views/dashboard/AverageOrderValue";
+import TopProducts from "src/views/dashboard/TopProducts";
+import TopServices from "src/views/dashboard/TopServices";
+import SalesChartHeader from "src/views/dashboard/SalesChartHeader";
+import Banner from "src/views/dashboard/Banner";
+import BannerCarousel from "src/views/dashboard/BannerCarousel";
+import Table from '../../views/dashboard/Table';
+import { User } from "../../@core/interface/user/interface";
+import TouristMapInfo from "src/views/dashboard/TouristMapInfo";
+import StaffAndClientTable from "src/views/dashboard/StaffAndClientTable";
 
-// ** MUI Imports
-import Grid from '@mui/material/Grid'
-
-// ** Icons Imports
-import Poll from 'mdi-material-ui/Poll'
-import CurrencyUsd from 'mdi-material-ui/CurrencyUsd'
-import HelpCircleOutline from 'mdi-material-ui/HelpCircleOutline'
-import BriefcaseVariantOutline from 'mdi-material-ui/BriefcaseVariantOutline'
-
-// ** Custom Components Imports
-import CardStatisticsVerticalComponent from '../../@core/components/card-statistics/card-stats-vertical'
-
-// ** Styled Component Import
-import ApexChartWrapper from '../../@core/styles/libs/react-apexcharts'
-
-// ** Demo Components Imports
-import Table from '../../views/dashboard/Table'
-import Trophy from '../../views/dashboard/Trophy'
-import StatisticsCard from '../../views/dashboard/StatisticsCard'
-
-import { useTranslations } from 'next-intl';
-
-// interface Import
-import {User} from "../../@core/interface/user/interface";
-import {withAuth} from "../../@core/SSR/lib/auth";
+const DynamicCard = dynamic(() => import('src/views/dashboard/Card'), { ssr: false });
 
 interface DashboardProps {
   userProfile: User;
@@ -33,7 +23,7 @@ interface DashboardProps {
 }
 
 export const getServerSideProps = withAuth(async (context) => {
-  const {userProfile} = context;
+  const { userProfile } = context;
 
   return {
     props: {
@@ -44,70 +34,45 @@ export const getServerSideProps = withAuth(async (context) => {
   };
 });
 
-const Dashboard: NextPage<DashboardProps> = ({userProfile}) => {
-  const t = useTranslations('dashboard');
-
+const Dashboard: NextPage<DashboardProps> = ({ userProfile, initialIsLoading }) => {
   return (
     <ApexChartWrapper>
-      <Grid container spacing={6}>
-        <Grid item xs={12} md={4}>
-          <Trophy userProfile={userProfile} t={t} />
-        </Grid>
-        <Grid item xs={12} md={8}>
-          <StatisticsCard />
-        </Grid>
-        <Grid item xs={12} md={8}>
-          <Table />
-        </Grid>
-        <Grid item xs={12} md={6} lg={4}>
-          <Grid container spacing={6}>
-            <Grid item xs={6}>
-              <CardStatisticsVerticalComponent
-                stats='$25.6k'
-                icon={<Poll />}
-                color='success'
-                trendNumber='+42%'
-                title={t('totalProfit')}
-                subtitle={t('weeklyProfit')}
-              />
-            </Grid>
-            <Grid item xs={6}>
-              <CardStatisticsVerticalComponent
-                stats='$78'
-                title='Refunds'
-                trend='negative'
-                color='secondary'
-                trendNumber='-15%'
-                subtitle='Past Month'
-                icon={<CurrencyUsd />}
-              />
-            </Grid>
-            <Grid item xs={6}>
-              <CardStatisticsVerticalComponent
-                stats='862'
-                trend='negative'
-                trendNumber='-18%'
-                title='New Project'
-                subtitle='Yearly Project'
-                icon={<BriefcaseVariantOutline />}
-              />
-            </Grid>
-            <Grid item xs={6}>
-              <CardStatisticsVerticalComponent
-                stats='15'
-                color='warning'
-                trend='negative'
-                trendNumber='-18%'
-                subtitle='Last Week'
-                title='Sales Queries'
-                icon={<HelpCircleOutline />}
-              />
-            </Grid>
+      <DimensionsProvider>
+        <Grid container spacing={6}>
+          <Grid item xs={12} md={6}>
+            <BannerCarousel />
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <AverageOrderValue />
+          </Grid>
+          <Grid item xs={12} md={9}>
+            <SalesChartHeader />
+          </Grid>
+          <Grid item xs={12} md={3}>
+            <Banner />
+          </Grid>
+          <Grid item xs={12}>
+            <Table />
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <TouristMapInfo />
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <DynamicCard />
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <TopProducts />
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <TopServices />
+          </Grid>
+          <Grid item xs={12} md={12}>
+            <StaffAndClientTable   />
           </Grid>
         </Grid>
-      </Grid>
+      </DimensionsProvider>
     </ApexChartWrapper>
-  )
-}
+  );
+};
 
-export default Dashboard
+export default Dashboard;

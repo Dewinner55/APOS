@@ -18,6 +18,7 @@ import BlankLayout from "src/@core/layouts/BlankLayout";
 import {useThemeMode} from "src/@core/hooks/useThemeMode";
 import {PaletteMode} from "@mui/material";
 import {GetServerSideProps} from "next/types";
+import LandingContent from "src/views/dashboard/LandingContent";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const themeFromCookie = context.req.cookies.theme;
@@ -102,6 +103,7 @@ const LandingPage = ({ initialTheme }: { initialTheme: PaletteMode }) => {
     <ThemeProvider theme={showCustomTheme ? LPtheme : defaultTheme}>
       <CssBaseline />
       <AppAppBar mode={mode} toggleColorMode={toggleColorMode}/>
+      <LandingContent/>
       <Hero />
       <Box sx={{ bgcolor: 'background.default' }}>
         <LogoCollection />
